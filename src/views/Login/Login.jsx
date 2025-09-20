@@ -4,6 +4,7 @@ import { shadesOfPurple,  } from "@clerk/themes";
 
 function Login() {
   return (
+    // alternative theme - TBD 
     // <div className='flex justify-center items-center w-full h-fit mt-14'>
     //   <SignIn appearance={{
     //   baseTheme: shadesOfPurple,
