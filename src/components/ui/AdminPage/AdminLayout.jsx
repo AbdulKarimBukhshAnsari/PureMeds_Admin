@@ -7,29 +7,34 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-background">
-      <aside className="w-64 bg-primary text-white p-6 flex flex-col justify-between">
+      <aside className="w-60 bg-primary text-white p-6 flex flex-col justify-between">
         {/* Top Section */}
         <div>
           <div className="flex flex-row items-center mb-8">
-            <PillBottle size={20} className="mr-4" />
-            <h1 className="text-2xl font-bold">PureMeds</h1>
+            {/* <PillBottle size={20} className="mr-4" />  */}
+            {/* Consult H */}
+            <h1 className="text-2xl font-bold ml-3">PureMeds</h1>
           </div>
           <div className="h-px bg-white/20 mb-6"></div>
           <p className="text-md opacity-80 mt-5 p-3">Main Menu</p>
-          <nav className="space-y-2">
-            <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
-              <LayoutDashboard size={20} />
-              <span>Dashboard</span>
-            </div>
-            <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
-              <PlusCircle size={20} />
-              <span>Add Medicine</span>
-            </div>
+          <nav className="space-y-1">
+            <Link to={"/dashboard"}>
+              <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
+                <LayoutDashboard size={20} />
+                <span>Dashboard</span>
+              </div>
+            </Link>
+            <Link to={"/dashboard/add-medicine"}>
+              <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
+                <PlusCircle size={20} />
+                <span>Add Medicine</span>
+              </div>
+            </Link>
             <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
               <List size={20} />
               <span>Medicine List</span>
@@ -42,7 +47,7 @@ function AdminLayout() {
         </div>
         {/* Bottom Section (Profile) */}
         <div>
-    <div className="h-px bg-white/20 mb-4"></div>
+          <div className="h-px bg-white/20 mb-4"></div>
           <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
             <UserButton
               appearance={{

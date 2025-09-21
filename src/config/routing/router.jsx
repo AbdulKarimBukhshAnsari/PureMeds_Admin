@@ -2,10 +2,9 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Login from "../../views/Login/Login";
 import Dashboard from "../../views/Dashboard/Dashboard";
-import { SignedIn, SignedOut } from "@clerk/clerk-react";
-import Layout from "../../Layout";
-import AdminLayout from "../../components/AdminPage/AdminLayout";
+import AdminLayout from "../../components/ui/AdminPage/AdminLayout";
 import PrivateRouter from "./privateRouter";
+import AddMedicine from "../../views/AddMedicine/AddMedicine";
 
 function AppRouter() {
   return (
@@ -20,6 +19,7 @@ function AppRouter() {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="add-medicine" element = {<AddMedicine/>}/>
       </Route>
     </Routes>
   );
