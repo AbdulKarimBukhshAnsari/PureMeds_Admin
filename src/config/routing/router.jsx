@@ -5,6 +5,7 @@ import Dashboard from "../../views/Dashboard/Dashboard";
 import AdminLayout from "../../components/ui/AdminPage/AdminLayout";
 import PrivateRouter from "./privateRouter";
 import AddMedicine from "../../views/AddMedicine/AddMedicine";
+import MedicineList from "../../views/MedicineList/MedicineList";
 
 function AppRouter() {
   return (
@@ -20,6 +21,7 @@ function AppRouter() {
       >
         <Route index element={<Dashboard />} />
         <Route path="add-medicine" element = {<AddMedicine/>}/>
+        <Route path="medicine-list" element = {<MedicineList/>}/>
       </Route>
     </Routes>
   );

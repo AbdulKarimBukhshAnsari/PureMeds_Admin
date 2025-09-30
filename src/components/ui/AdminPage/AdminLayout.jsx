@@ -35,10 +35,12 @@ function AdminLayout() {
                 <span>Add Medicine</span>
               </div>
             </Link>
+            <Link to={"/dashboard/medicine-list"}>
             <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
               <List size={20} />
               <span>Medicine List</span>
             </div>
+            </Link>
             <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
               <TriangleAlert size={20} />
               <span>Alert List</span>
