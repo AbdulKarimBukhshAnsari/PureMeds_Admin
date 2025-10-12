@@ -4,26 +4,22 @@ import { shadesOfPurple,  } from "@clerk/themes";
 
 function Login() {
   return (
-    // alternative theme - TBD 
-    // <div className='flex justify-center items-center w-full h-fit mt-14'>
-    //   <SignIn appearance={{
-    //   baseTheme: shadesOfPurple,
-    //   variables: {colorPrimary : '#f5f3f0', 
-    //     colorBackground : "#156874", 
-    //     colorInputBackground :"white" , 
-    //     colorInputForeground : 'black',
-    //     colorWarning : "#156874"
-    //   }
-    // }} forceRedirectUrl={"/dashboard"} />
-    // </div>
-
-    <div className='flex justify-center items-center w-full h-fit mt-10'>
-      <SignIn signUpUrl = "/" appearance={{
+    <div className='flex justify-center items-center w-full h-fit mt-20'>
+      <SignIn signUpUrl = "/" 
+      
+      appearance={{
+        // hiding SignUp and Google Buttons 
+        elements : {
+          footerAction : {display : "none"}, // for Signup
+          socialButtons : {display : 'none'}, // for Google SignIn
+          dividerRow : {display : "none"} // for Row Divider 
+        },
       theme:"simple" ,
       variables: {colorPrimary : '#156874', 
         colorWarning : "white",
       }
-    }} forceRedirectUrl={"/dashboard"} />
+    }} forceRedirectUrl={"/dashboard"} 
+    />
     </div>
   )
 }
