@@ -1,14 +1,51 @@
 import { Upload } from "lucide-react";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Button from "../../components/ui/Buttons/Button";
-import axios from "axios";
-
+import { useAuth } from "@clerk/clerk-react";
+import ModalConfirmationAlert from "../../components/Alert/ModalConfirmationAlert";
+import { uploadMedicine } from "../../apis/UploadMedicines/uploadMedicines";
+import ToastNotification from "../../components/Alert/ToastNotification";
+import { useToast } from "../../hooks/useToast/useToast";
 
 function AddMedicine() {
   const [preview, setPreview] = useState(null);
+  const [toast, showSuccess, showError, hideToast] = useToast();
+  const [ModalData , setModalData] = useState({
+    isOpen : false,
+    onClose : () => {},
+    onConfirm : () => {},
+    title : "",
+    message : "",
+    confirmText : "",
+    cancelText : "",
+    confirmVariant : "",
+    cancelVariant : ""
+  });
   const [img, setImg] = useState(null);
+  const { getToken } = useAuth();
   //   const [product, setProduct] = useState() // needed incase we set product details and handle the post logic seperately.
   const fileInputRef = useRef();
+
+  const resetForm = () => {
+    // Reset all form fields
+    document.getElementById("productName").value = "";
+    document.getElementById("chemicalName").value = "";
+    document.getElementById("manufacturer").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("purpose").value = "";
+    document.getElementById("availableStock").value = "";
+    document.getElementById("category").selectedIndex = 0; // Reset to first option
+    document.getElementById("sideEffects").value = "";
+    
+    // Reset image states
+    setPreview(null);
+    setImg(null);
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
 //   function for handling image upload 
   const handleFileChange = (e) => {
@@ -25,10 +62,26 @@ function AddMedicine() {
     }
   };
 
-//   function for handling form submission 
+//   function for handling form submission
+const handleUploadMedicine = async (formData) => {
+    try {
+      const token = await getToken({ template: "puremeds" });
+      const response = await uploadMedicine(formData, token);
+      showSuccess("Medicine uploaded successfully");
+      console.log("Upload response:", response);
+      // Reset form or perform other actions
+      resetForm();
+    } catch (error) {
+      showError("Failed to upload medicine");
+      console.error("Error uploading medicine:", error);
+    }
+  };
+
+
 
 const handleSubmit = async (e) => {
   e.preventDefault();
+
 
   try {
     const formData = new FormData();
@@ -50,11 +103,29 @@ const handleSubmit = async (e) => {
     if (img) {
       formData.append("productImage", img); 
     }
+ 
 
-    // POST to backend, TBD (to be done)
+    // console.log("Form Data to be submitted:");
+    // for (let pair of formData.entries()) {
+    //   console.log(`${pair[0]}: ${pair[1]}`);
+    // }
+
+    // Call the uploadMedicine API
+    setModalData({
+      isOpen : true,
+      onClose : () => setModalData((prev) => ({...prev, isOpen : false})),
+      onConfirm : async () => handleUploadMedicine(formData),
+      title : "Confirm Upload",
+      message : "Are you sure you want to upload this medicine?",
+      confirmText : "Yes, Upload",
+      cancelText : "No, Cancel",
+      confirmVariant : "primary",
+      cancelVariant : "secondary",
+      isAsync : true
+    });
+
   } catch (err) {
-    console.error("❌ Error adding medicine:", err);
-    alert("Failed to add medicine. Please try again.");
+    console.error("Error preparing form data:", err);
   }
 };
 
@@ -260,8 +331,18 @@ const handleSubmit = async (e) => {
           </div>
         </form>
       </div>
+      <ModalConfirmationAlert {...ModalData} />
+      <ToastNotification
+        isVisible={toast.isVisible}
+        type={toast.type}
+        message={toast.message}
+        duration={toast.duration}
+        onClose={hideToast}
+      />
     </div>
   );
-}
+
+};
+
 
 export default AddMedicine;
