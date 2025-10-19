@@ -10,9 +10,9 @@ import React from "react";
 import { Link, Outlet } from "react-router-dom";
 
 function AdminLayout() {
-  return (
+  return ( 
     <div className="flex min-h-screen bg-background">
-      <aside className="w-60 bg-primary text-white p-6 flex flex-col justify-between">
+      <aside className="w-60 bg-primary text-white p-6 flex flex-col justify-between max-h-[100%]">
         {/* Top Section */}
         <div>
           <div className="flex flex-row items-center mb-8">
@@ -67,7 +67,7 @@ function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow p-6">
+      <main className="flex-grow p-6 overflow-auto max-h-screen">
         <Outlet />
       </main>
     </div>
