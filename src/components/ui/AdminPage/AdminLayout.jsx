@@ -67,7 +67,7 @@ function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow p-6 overflow-auto max-h-screen">
+      <main className="flex-grow p-6 overflow-auto max-h-screen admin-scroll">
         <Outlet />
       </main>
     </div>
