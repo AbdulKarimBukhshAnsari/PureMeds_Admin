@@ -72,7 +72,7 @@ const MedicineList = () => {
       );
       showSuccess("Medicine deleted successfully.");
     } catch (error) {
-      showError("Failed to delete medicine.");
+      showError(error?.response?.data?.message);
       console.error("Error deleting medicine:", error);
     }
   };

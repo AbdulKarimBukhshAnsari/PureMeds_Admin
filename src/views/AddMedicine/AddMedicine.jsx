@@ -71,8 +71,8 @@ const handleUploadMedicine = async (formData) => {
       console.log("Upload response:", response);
       // Reset form or perform other actions
       resetForm();
-    } catch (error) {
-      showError("Failed to upload medicine");
+    } catch (error) {  
+      showError(error?.response?.data?.message);
       console.error("Error uploading medicine:", error);
     }
   };
@@ -104,11 +104,6 @@ const handleSubmit = async (e) => {
       formData.append("productImage", img); 
     }
  
-
-    // console.log("Form Data to be submitted:");
-    // for (let pair of formData.entries()) {
-    //   console.log(`${pair[0]}: ${pair[1]}`);
-    // }
 
     // Call the uploadMedicine API
     setModalData({
