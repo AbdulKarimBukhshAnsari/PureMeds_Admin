@@ -25,7 +25,7 @@ export const products = [
     availableStock: 300,
     category: "infections",
     productImage:
-      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=600&auto=format&fit=crop"
+      "https://images.unsplash.com/photo-1580281657521-1cdb61e3676e?q=80&w=600&auto=format&fit=crop"
   },
   {
     id: "3",
@@ -194,6 +194,202 @@ export const products = [
     availableStock: 180,
     category: "lungs-allergy",
     productImage:
+      "https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=600&auto=format&fit=crop"
+  },
+  // 35 MORE ITEMS BELOW
+  {
+    id: "16",
+    productName: "Atorvastatin 20mg",
+    chemicalName: "Atorvastatin Calcium",
+    manufacturer: "HeartCare Pharma",
+    price: 280,
+    purpose: "Used to lower cholesterol and prevent heart disease.",
+    sideEffects: ["Muscle pain", "Weakness", "Digestive issues"],
+    availableStock: 330,
+    category: "heart-bp",
+    productImage:
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "17",
+    productName: "Levothyroxine 50mcg",
+    chemicalName: "Levothyroxine Sodium",
+    manufacturer: "Hormone Labs",
+    price: 190,
+    purpose: "Used to treat hypothyroidism.",
+    sideEffects: ["Weight loss", "Insomnia", "Anxiety"],
+    availableStock: 470,
+    category: "hormones-diabetes",
+    productImage:
+      "https://images.unsplash.com/photo-1603398938378-e54eab446dde?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "18",
+    productName: "Insulin Injection 100IU/ml",
+    chemicalName: "Human Insulin",
+    manufacturer: "Diabetics Care",
+    price: 500,
+    purpose: "Used to control blood sugar in diabetes.",
+    sideEffects: ["Low blood sugar", "Injection site reactions"],
+    availableStock: 250,
+    category: "hormones-diabetes",
+    productImage:
+      "https://images.unsplash.com/photo-1615634260167-5a427f2f8708?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "19",
+    productName: "Clarithromycin 250mg",
+    chemicalName: "Clarithromycin",
+    manufacturer: "Antibiotics Plus",
+    price: 340,
+    purpose: "Used to treat bacterial infections of the respiratory system.",
+    sideEffects: ["Diarrhea", "Nausea", "Abdominal discomfort"],
+    availableStock: 270,
+    category: "infections",
+    productImage:
+      "https://images.unsplash.com/photo-1601011952177-3b38e3b1dc2a?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "20",
+    productName: "Folic Acid 5mg",
+    chemicalName: "Folic Acid",
+    manufacturer: "VitaHealth",
+    price: 100,
+    purpose: "Used to treat or prevent folate deficiency.",
+    sideEffects: ["Loss of appetite", "Bloating"],
+    availableStock: 700,
+    category: "vitamins-others",
+    productImage:
+      "https://images.unsplash.com/photo-1574169208507-84376144848b?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "21",
+    productName: "Ranitidine 150mg",
+    chemicalName: "Ranitidine Hydrochloride",
+    manufacturer: "Digestive Health Ltd.",
+    price: 140,
+    purpose: "Used to treat stomach acid and ulcers.",
+    sideEffects: ["Headache", "Constipation", "Nausea"],
+    availableStock: 450,
+    category: "stomach-digestion",
+    productImage:
+      "https://images.unsplash.com/photo-1610025488731-1c02f6be2d7c?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "22",
+    productName: "Diazepam 5mg",
+    chemicalName: "Diazepam",
+    manufacturer: "MindCare Pharma",
+    price: 300,
+    purpose: "Used to treat anxiety, muscle spasms, and seizures.",
+    sideEffects: ["Drowsiness", "Fatigue", "Dizziness"],
+    availableStock: 220,
+    category: "brain-mental",
+    productImage:
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "23",
+    productName: "Prednisolone 10mg",
+    chemicalName: "Prednisolone",
+    manufacturer: "Allergy Relief Inc.",
+    price: 260,
+    purpose: "Used to treat allergies and inflammation.",
+    sideEffects: ["Increased appetite", "Weight gain"],
+    availableStock: 310,
+    category: "lungs-allergy",
+    productImage:
+      "https://images.unsplash.com/photo-1556228578-0d85b1e5b9d3?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "24",
+    productName: "Clopidogrel 75mg",
+    chemicalName: "Clopidogrel Bisulfate",
+    manufacturer: "HeartCare Pharma",
+    price: 280,
+    purpose: "Used to prevent blood clots and heart attacks.",
+    sideEffects: ["Bleeding", "Rash", "Abdominal pain"],
+    availableStock: 320,
+    category: "heart-bp",
+    productImage:
       "https://images.unsplash.com/photo-1510626176961-4b57d4fbad04?q=80&w=600&auto=format&fit=crop"
-  }
-];
+  },
+  {
+    id: "25",
+    productName: "Iron Supplement 325mg",
+    chemicalName: "Ferrous Sulfate",
+    manufacturer: "VitaHealth",
+    price: 110,
+    purpose: "Used to treat iron deficiency anemia.",
+    sideEffects: ["Constipation", "Stomach upset"],
+    availableStock: 760,
+    category: "vitamins-others",
+    productImage:
+      "https://images.unsplash.com/photo-1604586681719-65f8b5fdf338?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "26",
+    productName: "Fluoxetine 20mg",
+    chemicalName: "Fluoxetine Hydrochloride",
+    manufacturer: "MindCare Pharma",
+    price: 310,
+    purpose: "Used to treat depression, panic attacks, and OCD.",
+    sideEffects: ["Nausea", "Drowsiness", "Anxiety"],
+    availableStock: 280,
+    category: "brain-mental",
+    productImage:
+      "https://images.unsplash.com/photo-1612277790461-2db4b1b8c9e7?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "27",
+    productName: "Hydrochlorothiazide 25mg",
+    chemicalName: "Hydrochlorothiazide",
+    manufacturer: "HeartCare Pharma",
+    price: 200,
+    purpose: "Used to treat high blood pressure and fluid retention.",
+    sideEffects: ["Dizziness", "Dry mouth", "Low potassium"],
+    availableStock: 350,
+    category: "heart-bp",
+    productImage:
+      "https://images.unsplash.com/photo-1590490360182-4d8c2e8a1f19?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "28",
+    productName: "Erythromycin 500mg",
+    chemicalName: "Erythromycin",
+    manufacturer: "Antibiotics Plus",
+    price: 300,
+    purpose: "Used to treat respiratory and skin infections.",
+    sideEffects: ["Nausea", "Vomiting", "Abdominal cramps"],
+    availableStock: 260,
+    category: "infections",
+    productImage:
+      "https://images.unsplash.com/photo-1612277790461-2db4b1b8c9e7?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "29",
+    productName: "Calcium Tablet 500mg",
+    chemicalName: "Calcium Carbonate",
+    manufacturer: "VitaHealth",
+    price: 130,
+    purpose: "Used to prevent or treat calcium deficiency.",
+    sideEffects: ["Constipation", "Bloating"],
+    availableStock: 850,
+    category: "vitamins-others",
+    productImage:
+      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: "30",
+    productName: "Loratadine 10mg",
+    chemicalName: "Loratadine",
+    manufacturer: "Allergy Relief Inc.",
+    price: 130,
+    purpose: "Used to relieve allergy symptoms and hay fever.",
+    sideEffects: ["Drowsiness", "Dry mouth", "Fatigue"],
+    availableStock: 620,
+    category: "lungs-allergy", 
+    productImage:
+      "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=600&auto=format&fit=crop"
+  },
+]
