@@ -8,16 +8,31 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Button from "../../components/ui/Buttons/Button";
-import { products } from "../../utils/mockData";
 import { Link } from "react-router-dom";
 import {
   fetchMedicineList,
   deleteMedicine,
 } from "../../apis/MedicineList/medicineList";
 import { useAuth } from "@clerk/clerk-react";
+import ModalConfirmationAlert from "../../components/Alert/ModalConfirmationAlert";
+import ToastNotification from "../../components/Alert/ToastNotification";
+import { useToast } from "../../hooks/useToast/useToast";
 
 const MedicineList = () => {
   const { getToken } = useAuth();
+  const [toast, showSuccess, showError, hideToast] = useToast();
+  const [modalData, setModalData] = useState({
+    isOpen: false,
+    onClose: () => {},
+    onConfirm: () => {},
+    title: "",
+    message: "",
+    confirmText: "",
+    cancelText: "",
+    isAsync: true,
+    confirmVariant: "",
+    cancelVariant: "",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const [productList, setProductList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -28,28 +43,59 @@ const MedicineList = () => {
     Math.ceil(productList?.length / ITEMS_PER_PAGE)
   );
 
-
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = await getToken();
-        const data = await fetchMedicineList(token, currentPage, searchQuery, selectedCategory);
+        const data = await fetchMedicineList(
+          token,
+          currentPage,
+          searchQuery,
+          selectedCategory
+        );
         setProductList(data?.data?.products);
         setTotalPages(Math.ceil(data?.data?.totalProducts / ITEMS_PER_PAGE));
         setTotalProducts(data?.data?.totalProducts);
-        console.log("Fetched medicine list:", data?.data);
       } catch (error) {
         console.error("Error fetching medicine list:", error);
       }
     };
     fetchData();
-  }, [searchQuery, selectedCategory, currentPage ]);
+  }, [searchQuery, selectedCategory, currentPage]);
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this medicine?")) {
-      setProductList(productList.filter((product) => product.id !== id));
+  const HandleDelete = async (id) => {
+    try {
+      const token = await getToken();
+      await deleteMedicine(id, token);
+      setProductList((prevList) =>
+        prevList.filter((product) => product._id !== id)
+      );
+      showSuccess("Medicine deleted successfully.");
+    } catch (error) {
+      showError("Failed to delete medicine.");
+      console.error("Error deleting medicine:", error);
+    }
+  };
+
+  const handleDeleteForm = async (id) => {
+    try {
+      setModalData({
+        isOpen: true,
+        title: "Delete Medicine",
+        message: "Are you sure you want to delete this medicine?",
+        confirmText: "Delete",
+        cancelText: "Cancel",
+        onConfirm: async () => {
+          await HandleDelete(id);
+        },
+        onClose: () => {
+          setModalData((prev) => ({ ...prev, isOpen: false }));
+        },
+        isAsync: true,
+      });
+      setTotalProducts((prevTotal) => prevTotal - 1);
+    } catch (error) {
+      console.error("Error deleting medicine:", error);
     }
   };
 
@@ -88,7 +134,7 @@ const MedicineList = () => {
                 value={selectedCategory}
                 onChange={(e) => {
                   setSelectedCategory(e.target.value);
-                  setCurrentPage(1); // reset pagination
+                  setCurrentPage(1);
                 }}
               >
                 <option value="">All Categories</option>
@@ -119,7 +165,7 @@ const MedicineList = () => {
             <tbody className="divide-y divide-gray-200">
               {productList?.length > 0 ? (
                 productList?.map((product) => (
-                  <tr key={product.id}>
+                  <tr key={product._id}>
                     <td className="py-4 px-6">
                       <div className="flex items-center">
                         <img
@@ -141,7 +187,7 @@ const MedicineList = () => {
                         </button>
                         <button
                           className="p-1 text-red-500 hover:text-red-700"
-                          onClick={() => handleDelete(product._id)}
+                          onClick={() => handleDeleteForm(product._id)}
                         >
                           <Trash2 size={18} />
                         </button>
@@ -176,17 +222,18 @@ const MedicineList = () => {
             >
               <ChevronLeft className="text-primary-hover" size={20} />
             </button>
-            {totalPages > 0 && [...Array(totalPages)].map((_, idx) => (
-              <button
-                key={idx}
-                className={`px-3 py-1 border rounded border-gray-400 ${
-                  currentPage === idx + 1 ? "bg-primary text-white" : ""
-                }`}
-                onClick={() => setCurrentPage(idx + 1)}
-              >
-                {idx + 1}
-              </button>
-            ))}
+            {totalPages > 0 &&
+              [...Array(totalPages)].map((_, idx) => (
+                <button
+                  key={idx}
+                  className={`px-3 py-1 border rounded border-gray-400 ${
+                    currentPage === idx + 1 ? "bg-primary text-white" : ""
+                  }`}
+                  onClick={() => setCurrentPage(idx + 1)}
+                >
+                  {idx + 1}
+                </button>
+              ))}
             <button
               className="px-3 py-1 border rounded border-gray-400"
               disabled={currentPage === totalPages}
@@ -197,6 +244,14 @@ const MedicineList = () => {
           </div>
         </div>
       </div>
+      <ModalConfirmationAlert {...modalData} />
+      <ToastNotification
+        isVisible={toast.isVisible}
+        type={toast.type}
+        message={toast.message}
+        duration={toast.duration}
+        onClose={hideToast}
+      />
     </div>
   );
 };
