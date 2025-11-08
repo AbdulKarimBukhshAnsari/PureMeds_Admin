@@ -393,3 +393,62 @@ export const products = [
       "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=600&auto=format&fit=crop"
   },
 ]
+
+export const mockAlerts = [
+  {
+    alertID: 'CD-234',
+    medicineName: 'Paracetamol',
+    medicineDose: '500mg',
+    manufacturer: 'ABC COMPANY',
+    batchId: 'PMD-12345',
+    manufacturerDate: '2025-01-01',
+    expiryDate: '2026-12-12',
+    qrCode:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png',
+    store: 'City Medical Store',
+    city: 'Lahore',
+    
+  },
+  {
+    alertID: 'CD-235',
+    medicineName: 'Amoxicillin',
+    medicineDose: '250mg',
+    manufacturer: 'XYZ PHARMA',
+    batchId: 'PMD-23456',
+    manufacturerDate: '2025-02-15',
+    expiryDate: '2027-02-15',
+    qrCode:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png',
+    store: 'Family Pharmacy',
+    city: 'Karachi',
+    
+  },
+  {
+    alertID: 'CD-236',
+    medicineName: 'Ciprofloxacin',
+    medicineDose: '500mg',
+    manufacturer: 'HEALTH PHARMA',
+    batchId: 'PMD-34567',
+    manufacturerDate: '2025-03-10',
+    expiryDate: '2027-03-10',
+    qrCode:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png',
+    store: 'Medicare Pharmacy',
+    city: 'Islamabad',
+   
+  },
+  {
+    alertID: 'CD-237',
+    medicineName: 'Metformin',
+    medicineDose: '850mg',
+    manufacturer: 'DIABETES CARE',
+    batchId: 'PMD-45678',
+    manufacturerDate: '2025-04-20',
+    expiryDate: '2027-04-20',
+    qrCode:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png',
+    store: 'Health Point',
+    city: 'Faisalabad',
+    
+  },
+]

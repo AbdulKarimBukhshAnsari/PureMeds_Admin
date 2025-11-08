@@ -5,6 +5,7 @@ import {
   PillBottle,
   PlusCircle,
   TriangleAlert,
+  ExternalLink,
 } from "lucide-react";
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
@@ -12,7 +13,7 @@ import { Link, Outlet } from "react-router-dom";
 function AdminLayout() {
   return ( 
     <div className="flex min-h-screen bg-background">
-      <aside className="w-60 bg-primary text-white p-6 flex flex-col justify-between max-h-[100%]">
+      <aside className="w-60 bg-primary text-white p-6 flex flex-col justify-between max-h-[100%] flex-shrink-0">
         {/* Top Section */}
         <div>
           <div className="flex flex-row items-center mb-8">
@@ -41,10 +42,23 @@ function AdminLayout() {
               <span>Medicine List</span>
             </div>
             </Link>
+            <Link to={'/dashboard/alert-list'}>
             <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
               <TriangleAlert size={20} />
               <span>Alert List</span>
             </div>
+            </Link>
+            <a 
+              href="http://localhost:5174/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
+                <ExternalLink size={20} />
+                <span>View Website</span>
+              </div>
+            </a>
           </nav>
         </div>
         {/* Bottom Section (Profile) */}
@@ -67,7 +81,7 @@ function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow p-6 overflow-auto max-h-screen admin-scroll">
+      <main className="flex-grow p-6 overflow-auto max-h-screen admin-scroll overflow-x-hidden min-w-0">
         <Outlet />
       </main>
     </div>

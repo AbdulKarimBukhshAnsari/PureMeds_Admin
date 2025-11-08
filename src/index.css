@@ -4,13 +4,13 @@
   --color-primary: #156874;
   --color-primary-hover: #12535d;
 
-  --color-background: #f5f3f0;
+  --color-background: #deefec;
+  --color-secondarybackground : #f5f3f0;
   --color-surface: #ffffff;
 
   --color-text: #2e2e2e;
-  --color-accent: #ff6b6b;
+  --color-accent: #53E6CC;
   --color-accent-hover: #ff5252;
-
   --font-sans: "Poppins", sans-serif;
 }
 

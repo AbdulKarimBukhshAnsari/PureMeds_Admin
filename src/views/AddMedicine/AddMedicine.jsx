@@ -1,75 +1,138 @@
-import { Upload } from "lucide-react";
+import { Upload, Package, FlaskConical, Building2, DollarSign, Package2, Tag, FileText, AlertCircle, Image as ImageIcon } from "lucide-react";
 import { useRef, useState } from "react";
+import { motion } from "framer-motion";
+import * as yup from "yup";
 import Button from "../../components/ui/Buttons/Button";
 import { useAuth } from "@clerk/clerk-react";
-import ModalConfirmationAlert from "../../components/Alert/ModalConfirmationAlert";
+import ModalConfirmationAlert from "../../components/ui/Alerts/ModalConfirmationAlert";
 import { uploadMedicine } from "../../apis/UploadMedicines/uploadMedicines";
-import ToastNotification from "../../components/Alert/ToastNotification";
+import ToastNotification from "../../components/ui/Alerts/ToastNotification";
 import { useToast } from "../../hooks/useToast/useToast";
 
+// Validation schema
+const validationSchema = yup.object().shape({
+  productName: yup
+    .string()
+    .required("Product name is required")
+    .min(2, "Product name must be at least 2 characters"),
+  chemicalName: yup
+    .string()
+    .required("Chemical name is required")
+    .min(2, "Chemical name must be at least 2 characters"),
+  manufacturer: yup
+    .string()
+    .required("Manufacturer is required")
+    .min(2, "Manufacturer name must be at least 2 characters"),
+  price: yup
+    .number()
+    .required("Price is required")
+    .positive("Price must be a positive number")
+    .typeError("Price must be a valid number"),
+  purpose: yup
+    .string()
+    .required("Purpose is required")
+    .min(10, "Purpose must be at least 10 characters"),
+  availableStock: yup
+    .number()
+    .required("Available stock is required")
+    .integer("Stock must be a whole number")
+    .min(0, "Stock cannot be negative")
+    .typeError("Stock must be a valid number"),
+  category: yup
+    .string()
+    .required("Category is required"),
+  sideEffects: yup.string().optional(),
+  productImage: yup
+    .mixed()
+    .required("Product image is required")
+    .test("fileType", "Only image files are allowed", (value) => {
+      if (!value) return false;
+      return value instanceof File && value.type.startsWith("image/");
+    })
+});
+
 function AddMedicine() {
-  const [preview, setPreview] = useState(null);
-  const [toast, showSuccess, showError, hideToast] = useToast();
-  const [ModalData , setModalData] = useState({
-    isOpen : false,
-    onClose : () => {},
-    onConfirm : () => {},
-    title : "",
-    message : "",
-    confirmText : "",
-    cancelText : "",
-    confirmVariant : "",
-    cancelVariant : ""
+  const [formValues, setFormValues] = useState({
+    productName: "",
+    chemicalName: "",
+    manufacturer: "",
+    price: "",
+    purpose: "",
+    availableStock: "",
+    category: "pain-fever",
+    sideEffects: "",
+    productImage: null
   });
-  const [img, setImg] = useState(null);
+
+  const [preview, setPreview] = useState(null);
+  const [errors, setErrors] = useState({});
+  const [toast, showSuccess, showError, hideToast] = useToast();
+  const [ModalData, setModalData] = useState({
+    isOpen: false,
+    onClose: () => {},
+    onConfirm: () => {},
+    title: "",
+    message: "",
+    confirmText: "",
+    cancelText: "",
+    confirmVariant: "",
+    cancelVariant: ""
+  });
   const { getToken } = useAuth();
-  //   const [product, setProduct] = useState() // needed incase we set product details and handle the post logic seperately.
   const fileInputRef = useRef();
 
-  const resetForm = () => {
-    // Reset all form fields
-    document.getElementById("productName").value = "";
-    document.getElementById("chemicalName").value = "";
-    document.getElementById("manufacturer").value = "";
-    document.getElementById("price").value = "";
-    document.getElementById("purpose").value = "";
-    document.getElementById("availableStock").value = "";
-    document.getElementById("category").selectedIndex = 0; // Reset to first option
-    document.getElementById("sideEffects").value = "";
-    
-    // Reset image states
-    setPreview(null);
-    setImg(null);
-    
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormValues((prev) => ({
+      ...prev,
+      [id]: value
+    }));
+
+    // Clear the error for this field on change
+    if (errors[id]) {
+      setErrors((prev) => ({ ...prev, [id]: undefined }));
     }
   };
 
-//   function for handling image upload 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPreview(URL.createObjectURL(file)); // for preview
-      setImg(fileInputRef.current.files[0]);
-      // TODO: Upload to backend here
-    }
-  };
-  const openFilePicker = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+      setPreview(URL.createObjectURL(file));
+      setFormValues((prev) => ({ ...prev, productImage: file }));
+
+      if (errors.productImage) {
+        setErrors((prev) => ({ ...prev, productImage: undefined }));
+      }
     }
   };
 
-//   function for handling form submission
-const handleUploadMedicine = async (formData) => {
+  const openFilePicker = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const resetForm = () => {
+    setFormValues({
+      productName: "",
+      chemicalName: "",
+      manufacturer: "",
+      price: "",
+      purpose: "",
+      availableStock: "",
+      category: "pain-fever",
+      sideEffects: "",
+      productImage: null
+    });
+    setPreview(null);
+    setErrors({});
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleUploadMedicine = async (formData) => {
     try {
       const token = await getToken({ template: "puremeds" });
       const response = await uploadMedicine(formData, token);
       showSuccess("Medicine uploaded successfully");
       console.log("Upload response:", response);
-      // Reset form or perform other actions
       resetForm();
     } catch (error) {
       showError("Failed to upload medicine");
@@ -77,260 +140,288 @@ const handleUploadMedicine = async (formData) => {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    const valuesForValidation = {
+      ...formValues,
+      price: formValues.price ? Number(formValues.price) : undefined,
+      availableStock: formValues.availableStock ? Number(formValues.availableStock) : undefined
+    };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-
-  try {
-    const formData = new FormData();
-
-    formData.append("productName", document.getElementById("productName").value);
-    formData.append("chemicalName", document.getElementById("chemicalName").value);
-    formData.append("manufacturer", document.getElementById("manufacturer").value);
-    formData.append("price", Number(document.getElementById("price").value));
-    formData.append("purpose", document.getElementById("purpose").value);
-    formData.append("availableStock", Number(document.getElementById("availableStock").value));
-    formData.append("category", document.getElementById("category").value);
-
-    const sideEffects = document
-      .getElementById("sideEffects")
-      .value.split(",")
-      .map((s) => s.trim());
-    formData.append("sideEffects", JSON.stringify(sideEffects));
-
-    if (img) {
-      formData.append("productImage", img); 
+    try {
+      await validationSchema.validate(valuesForValidation, { abortEarly: false });
+      setErrors({});
+    } catch (validationError) {
+      if (validationError.inner) {
+        const validationErrors = {};
+        validationError.inner.forEach((error) => {
+          if (error.path) validationErrors[error.path] = error.message;
+        });
+        setErrors(validationErrors);
+        showError("Please fill in all required fields correctly");
+        return;
+      }
     }
- 
 
-    // console.log("Form Data to be submitted:");
-    // for (let pair of formData.entries()) {
-    //   console.log(`${pair[0]}: ${pair[1]}`);
-    // }
-
-    // Call the uploadMedicine API
-    setModalData({
-      isOpen : true,
-      onClose : () => setModalData((prev) => ({...prev, isOpen : false})),
-      onConfirm : async () => handleUploadMedicine(formData),
-      title : "Confirm Upload",
-      message : "Are you sure you want to upload this medicine?",
-      confirmText : "Yes, Upload",
-      cancelText : "No, Cancel",
-      confirmVariant : "primary",
-      cancelVariant : "secondary",
-      isAsync : true
+    const formData = new FormData();
+    Object.entries(formValues).forEach(([key, value]) => {
+      if (key === "sideEffects") {
+        const sideEffectsArray = value.split(",").map((s) => s.trim()).filter((s) => s.length > 0);
+        formData.append("sideEffects", JSON.stringify(sideEffectsArray));
+      } else if (key === "price" || key === "availableStock") {
+        formData.append(key, Number(value));
+      } else if (key === "productImage") {
+        if (value) formData.append("productImage", value);
+      } else {
+        formData.append(key, value);
+      }
     });
 
-  } catch (err) {
-    console.error("Error preparing form data:", err);
-  }
-};
-
+    setModalData({
+      isOpen: true,
+      onClose: () => setModalData((prev) => ({ ...prev, isOpen: false })),
+      onConfirm: async () => handleUploadMedicine(formData),
+      title: "Confirm Upload",
+      message: "Are you sure you want to upload this medicine?",
+      confirmText: "Yes, Upload",
+      cancelText: "No, Cancel",
+      confirmVariant: "primary",
+      cancelVariant: "secondary",
+      isAsync: true
+    });
+  };
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Add New Medicine</h1>
-        <p className="text-gray-600">Enter medicine details</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="max-w-6xl mx-auto p-5"
+    >
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-gray-900 to-primary bg-clip-text text-transparent inline-block ">
+          Add New Medicine
+        </h1>
+        <p className="text-gray-600 text-lg">Fill in the details to add a new medicine to the inventory</p>
       </div>
-      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-        <form onSubmit={handleSubmit}>
+
+      <form onSubmit={handleSubmit}>
+        <div className="bg-surface rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
           {/* Basic Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* Product Name */}
-            <div>
-              <label
-                htmlFor="productName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Product Name
-              </label>
-              <input
-                type="text"
-                id="productName"
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="e.g. Paracetamol 500mg"
-              />
+          <div className="p-8 border-b border-gray-100">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <FileText className="text-primary" size={20} />
+              </div>
+              <h2 className="text-3xl font-semibold text-text">Basic Information</h2>
             </div>
 
-            {/* Chemical Name */}
-            <div>
-              <label
-                htmlFor="chemicalName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Chemical Name
-              </label>
-              <input
-                type="text"
-                id="chemicalName"
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="e.g. Acetaminophen"
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Product Name */}
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="space-y-2">
+                <label htmlFor="productName" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <Package size={16} className="text-primary" /> Product Name
+                </label>
+                <input
+                  type="text"
+                  id="productName"
+                  value={formValues.productName}
+                  onChange={handleChange}
+                  placeholder="e.g. Paracetamol 500mg"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white ${
+                    errors.productName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
+                  }`}
+                />
+                {errors.productName && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.productName}</p>}
+              </motion.div>
 
-            {/* Manufacturer */}
-            <div>
-              <label
-                htmlFor="manufacturer"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Manufacturer
-              </label>
-              <input
-                type="text"
-                id="manufacturer"
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="e.g. ABC Pharma Ltd."
-              />
-            </div>
+              {/* Chemical Name */}
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 }} className="space-y-2">
+                <label htmlFor="chemicalName" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <FlaskConical size={16} className="text-primary" /> Chemical Name
+                </label>
+                <input
+                  type="text"
+                  id="chemicalName"
+                  value={formValues.chemicalName}
+                  onChange={handleChange}
+                  placeholder="e.g. Acetaminophen"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white ${
+                    errors.chemicalName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
+                  }`}
+                />
+                {errors.chemicalName && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.chemicalName}</p>}
+              </motion.div>
 
-            {/* Price */}
-            <div>
-              <label
-                htmlFor="price"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Price (Rs.)
-              </label>
-              <input
-                type="number"
-                id="price"
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="e.g. 150"
-              />
-            </div>
+              {/* Manufacturer */}
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }} className="space-y-2">
+                <label htmlFor="manufacturer" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <Building2 size={16} className="text-primary" /> Manufacturer
+                </label>
+                <input
+                  type="text"
+                  id="manufacturer"
+                  value={formValues.manufacturer}
+                  onChange={handleChange}
+                  placeholder="e.g. ABC Pharma Ltd."
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white ${
+                    errors.manufacturer ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
+                  }`}
+                />
+                {errors.manufacturer && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.manufacturer}</p>}
+              </motion.div>
 
-            {/* Available Stock */}
-            <div>
-              <label
-                htmlFor="availableStock"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Available Stock
-              </label>
-              <input
-                type="number"
-                id="availableStock"
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-                placeholder="e.g. 500"
-              />
-            </div>
+              {/* Price */}
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }} className="space-y-2">
+                <label htmlFor="price" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <DollarSign size={16} className="text-primary" /> Price (Rs.)
+                </label>
+                <input
+                  type="number"
+                  id="price"
+                  value={formValues.price}
+                  onChange={handleChange}
+                  min="0"
+                  step="0.01"
+                  placeholder="e.g. 150.00"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white ${
+                    errors.price ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
+                  }`}
+                />
+                {errors.price && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.price}</p>}
+              </motion.div>
 
-            {/* Category Dropdown */}
-            <div>
-              <label
-                htmlFor="category"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Category
-              </label>
-              <select
-                id="category"
-                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-              >
-                <option value="pain-fever">Pain & Fever</option>
-                <option value="infections">Infections</option>
-                <option value="heart-bp">Heart & BP</option>
-                <option value="lungs-allergy">Lungs & Allergy</option>
-                <option value="stomach-digestion">Stomach & Digestion</option>
-                <option value="hormones-diabetes">Hormones & Diabetes</option>
-                <option value="brain-mental">Brain and Mental Health</option>
-                <option value="vitamins-others">Vitamins & Others</option>
-              </select>
+              {/* Available Stock */}
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }} className="space-y-2">
+                <label htmlFor="availableStock" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <Package2 size={16} className="text-primary" /> Available Stock
+                </label>
+                <input
+                  type="number"
+                  id="availableStock"
+                  value={formValues.availableStock}
+                  onChange={handleChange}
+                  min="0"
+                  placeholder="e.g. 500"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white ${
+                    errors.availableStock ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
+                  }`}
+                />
+                {errors.availableStock && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.availableStock}</p>}
+              </motion.div>
+
+              {/* Category */}
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }} className="space-y-2">
+                <label htmlFor="category" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <Tag size={16} className="text-primary" /> Category
+                </label>
+                <select
+                  id="category"
+                  value={formValues.category}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white cursor-pointer ${
+                    errors.category ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
+                  }`}
+                >
+                  <option value="pain-fever">Pain & Fever</option>
+                  <option value="infections">Infections</option>
+                  <option value="heart-bp">Heart & BP</option>
+                  <option value="lungs-allergy">Lungs & Allergy</option>
+                  <option value="stomach-digestion">Stomach & Digestion</option>
+                  <option value="hormones-diabetes">Hormones & Diabetes</option>
+                  <option value="brain-mental">Brain and Mental Health</option>
+                  <option value="vitamins-others">Vitamins & Others</option>
+                </select>
+                {errors.category && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.category}</p>}
+              </motion.div>
             </div>
           </div>
 
-          {/* Purpose */}
-          <div className="mb-6">
-            <label
-              htmlFor="purpose"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Purpose
-            </label>
-            <textarea
-              id="purpose"
-              rows={2}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="What is this medicine used for?"
-            ></textarea>
+          {/* Medical Details Section */}
+          <div className="p-8 border-b border-gray-100">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <FileText className="text-primary" size={20} />
+              </div>
+              <h2 className="text-3xl font-semibold text-text">Medical Details</h2>
+            </div>
+
+            <div className="space-y-6">
+              {/* Purpose */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-2">
+                <label htmlFor="purpose" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <FileText size={16} className="text-primary" /> Purpose
+                </label>
+                <textarea
+                  id="purpose"
+                  value={formValues.purpose}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="What is this medicine used for? Describe the medical purpose..."
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white resize-none ${
+                    errors.purpose ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
+                  }`}
+                />
+                {errors.purpose && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.purpose}</p>}
+              </motion.div>
+
+              {/* Side Effects */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="space-y-2">
+                <label htmlFor="sideEffects" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <AlertCircle size={16} className="text-primary" /> Side Effects
+                </label>
+                <textarea
+                  id="sideEffects"
+                  value={formValues.sideEffects}
+                  onChange={handleChange}
+                  rows={3}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 bg-white resize-none"
+                  placeholder="List possible side effects (e.g., nausea, dizziness, headache)"
+                />
+                <p className="text-xs text-gray-500 mt-1">Separate multiple side effects with commas</p>
+              </motion.div>
+            </div>
           </div>
 
-          {/* Side Effects */}
-          <div className="mb-6">
-            <label
-              htmlFor="sideEffects"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Side Effects
-            </label>
-            <textarea
-              id="sideEffects"
-              rows={3}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
-              placeholder="List possible side effects, separated by commas"
-            ></textarea>
-          </div>
+          {/* Product Image Section */}
+          <div className="p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <ImageIcon className="text-primary" size={20} />
+              </div>
+              <h2 className="text-3xl font-semibold text-text">Product Image</h2>
+            </div>
 
-          {/* Product Image */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Product Image
-            </label>
-            <div className="border-2 border-dashed border-gray-500 rounded-lg p-6 text-center">
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-              />
+            <div className={`border-2 border-dashed rounded-lg p-6 text-center ${
+              errors.productImage ? "border-red-500 bg-red-50/50" : "border-gray-500"
+            }`}>
+              <input type="file" accept="image/*" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
               {!preview ? (
                 <div className="flex flex-col items-center">
-                  <Upload size={36} className="text-gray-400 mb-2" />
-                  <p className="text-gray-500 mb-2">
-                    Drag and drop an image or click to browse
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    type="button"
-                    onClick={openFilePicker}
-                  >
-                    Upload Image
-                  </Button>
+                  <Upload size={36} className={`mb-2 ${errors.productImage ? "text-red-400" : "text-gray-400"}`} />
+                  <p className={`mb-2 ${errors.productImage ? "text-red-600" : "text-gray-500"}`}>Drag and drop an image or click to browse</p>
+                  <Button variant="outline" size="sm" type="button" onClick={openFilePicker}>Upload Image</Button>
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <img
-                    src={preview}
-                    alt="preview"
-                    className="h-60 w-96 object-cover rounded-md mb-3"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    type="button"
-                    onClick={openFilePicker}
-                  >
-                    Change Image
-                  </Button>
+                  <img src={preview} alt="preview" className="h-60 w-96 object-cover rounded-md mb-3" />
+                  <Button variant="outline" size="sm" type="button" onClick={openFilePicker}>Change Image</Button>
                 </div>
               )}
             </div>
+            {errors.productImage && <p className="text-sm text-red-600 flex items-center gap-1 mt-2"><AlertCircle size={14} />{errors.productImage}</p>}
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="flex justify-end gap-4">
-            <Button variant="secondary">Cancel</Button>
-            <Button variant="primary">Add Medicine</Button>
-          </div>
-        </form>
-      </div>
+        {/* Action Buttons */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="flex justify-end gap-4 mt-8">
+          <Button variant="secondary" size="lg" type="button" onClick={resetForm} className="px-8">Reset Form</Button>
+          <Button variant="primary" size="lg" type="submit" className="px-8 shadow-lg hover:shadow-xl transition-shadow">Add Medicine</Button>
+        </motion.div>
+      </form>
+
       <ModalConfirmationAlert {...ModalData} />
       <ToastNotification
         isVisible={toast.isVisible}
@@ -339,10 +430,8 @@ const handleSubmit = async (e) => {
         duration={toast.duration}
         onClose={hideToast}
       />
-    </div>
+    </motion.div>
   );
-
-};
-
+}
 
 export default AddMedicine;
