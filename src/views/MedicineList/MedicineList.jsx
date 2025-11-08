@@ -19,9 +19,12 @@ import { useAuth } from "@clerk/clerk-react";
 import ModalConfirmationAlert from "../../components/ui/Alerts/ModalConfirmationAlert";
 import ToastNotification from "../../components/ui/Alerts/ToastNotification";
 import { useToast } from "../../hooks/useToast/useToast";
+import EditMedicineModal from "./ui/EditMedicineModal";
 
 const MedicineList = () => {
   const { getToken } = useAuth();
+  const [open, setOpen] = useState(false);
+  const [medicine, setMedicine] = useState(null);
   const [toast, showSuccess, showError, hideToast] = useToast();
   const [modalData, setModalData] = useState({
     isOpen: false,
@@ -236,15 +239,7 @@ const MedicineList = () => {
                           </span>
                         </td>
                         <td className="py-5 px-6 text-left">
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                              product.availableStock > 50
-                                ? "bg-green-100 text-green-800"
-                                : product.availableStock > 20
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
                             {product.availableStock}
                           </span>
                         </td>
@@ -253,6 +248,10 @@ const MedicineList = () => {
                             <button
                               className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-110"
                               title="Edit"
+                              onClick={() => {
+                                setMedicine(product);
+                                setOpen(true);
+                              }}
                             >
                               <Edit size={18} />
                             </button>
@@ -287,6 +286,16 @@ const MedicineList = () => {
             </div>
           </div>
 
+          <EditMedicineModal
+            medicine={medicine}
+            isOpen={open}
+            onClose={() => setOpen(false)}
+            onSave={(updatedData) => {
+              console.log(updatedData);
+              setOpen(false);
+            }}
+          />
+
           {/* Pagination */}
           {productList?.length > 0 && (
             <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t border-gray-200 bg-gray-50/50">
@@ -301,7 +310,9 @@ const MedicineList = () => {
                 >
                   <ChevronLeft
                     size={20}
-                    className={currentPage === 1 ? "text-gray-400" : "text-primary"}
+                    className={
+                      currentPage === 1 ? "text-gray-400" : "text-primary"
+                    }
                   />
                 </button>
                 {totalPages > 0 &&
@@ -321,12 +332,16 @@ const MedicineList = () => {
                 <button
                   className="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-100 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                   disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(p + 1, totalPages))
+                  }
                 >
                   <ChevronRight
                     size={20}
                     className={
-                      currentPage === totalPages ? "text-gray-400" : "text-primary"
+                      currentPage === totalPages
+                        ? "text-gray-400"
+                        : "text-primary"
                     }
                   />
                 </button>
