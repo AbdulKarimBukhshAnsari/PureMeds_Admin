@@ -7,14 +7,16 @@ import AdminLayout from "../../components/ui/AdminPage/AdminLayout";
 import PrivateRouter from "./privateRouter";
 import AddMedicine from "../../views/AddMedicine/AddMedicine";
 import MedicineList from "../../views/MedicineList/MedicineList";
+import Loader from "../../components/ui/LoadingAnimation/Loader";
+import { AlertList } from "../../views/Alerts/AlertList";
 
 function AppRouter() {
   const { isLoaded, isSignedIn } = useAuth();
 
   if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center h-screen text-xl text-primary">
-        Loading...
+      <div className="bg-background min-h-screen flex flex-col justify-center items-center text-center">
+        <Loader/>
       </div>
     );
   }
@@ -36,6 +38,8 @@ function AppRouter() {
         <Route index element={<Dashboard />} />
         <Route path="add-medicine" element={<AddMedicine />} />
         <Route path="medicine-list" element={<MedicineList />} />
+        <Route path="alert-list" element={<AlertList />} />
+
       </Route>
     </Routes>
   );
