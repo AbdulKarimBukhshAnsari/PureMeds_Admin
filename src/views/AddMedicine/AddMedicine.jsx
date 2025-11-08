@@ -134,8 +134,8 @@ function AddMedicine() {
       showSuccess("Medicine uploaded successfully");
       console.log("Upload response:", response);
       resetForm();
-    } catch (error) {
-      showError("Failed to upload medicine");
+    } catch (error) {  
+      showError(error?.response?.data?.message);
       console.error("Error uploading medicine:", error);
     }
   };
