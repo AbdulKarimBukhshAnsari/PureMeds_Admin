@@ -1,4 +1,4 @@
-import { Upload, Package, FlaskConical, Building2, DollarSign, Package2, Tag, FileText, AlertCircle, Image as ImageIcon } from "lucide-react";
+import { Upload, Package, FlaskConical, Building2, DollarSign, Package2, Tag, FileText, AlertCircle, Image as ImageIcon, Hash, Calendar } from "lucide-react";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import * as yup from "yup";
@@ -8,6 +8,8 @@ import ModalConfirmationAlert from "../../components/ui/Alerts/ModalConfirmation
 import { uploadMedicine } from "../../apis/UploadMedicines/uploadMedicines";
 import ToastNotification from "../../components/ui/Alerts/ToastNotification";
 import { useToast } from "../../hooks/useToast/useToast";
+import DatePicker from "../../components/ui/DatePicker/DatePicker";
+import CustomDropdown from "../../components/ui/Dropdown/CustomDropdown";
 
 // Validation schema
 const validationSchema = yup.object().shape({
@@ -41,6 +43,15 @@ const validationSchema = yup.object().shape({
   category: yup
     .string()
     .required("Category is required"),
+  batchId: yup
+    .string()
+    .required("Batch ID is required")
+    .matches(/^PM-\d+$/, "Batch ID must be in format PM-{number} (e.g., PM-12345)"),
+  expiryDate: yup
+    .date()
+    .required("Expiry date is required")
+    .min(new Date(), "Expiry date must be in the future")
+    .typeError("Please select a valid expiry date"),
   sideEffects: yup.string().optional(),
   productImage: yup
     .mixed()
@@ -60,6 +71,8 @@ function AddMedicine() {
     purpose: "",
     availableStock: "",
     category: "pain-fever",
+    batchId: "",
+    expiryDate: null,
     sideEffects: "",
     productImage: null
   });
@@ -119,6 +132,8 @@ function AddMedicine() {
       purpose: "",
       availableStock: "",
       category: "pain-fever",
+      batchId: "",
+      expiryDate: null,
       sideEffects: "",
       productImage: null
     });
@@ -146,7 +161,8 @@ function AddMedicine() {
     const valuesForValidation = {
       ...formValues,
       price: formValues.price ? Number(formValues.price) : undefined,
-      availableStock: formValues.availableStock ? Number(formValues.availableStock) : undefined
+      availableStock: formValues.availableStock ? Number(formValues.availableStock) : undefined,
+      expiryDate: formValues.expiryDate ? new Date(formValues.expiryDate) : undefined
     };
 
     try {
@@ -171,6 +187,10 @@ function AddMedicine() {
         formData.append("sideEffects", JSON.stringify(sideEffectsArray));
       } else if (key === "price" || key === "availableStock") {
         formData.append(key, Number(value));
+      } else if (key === "expiryDate") {
+        if (value) {
+          formData.append("expiryDate", new Date(value).toISOString());
+        }
       } else if (key === "productImage") {
         if (value) formData.append("productImage", value);
       } else {
@@ -314,27 +334,66 @@ function AddMedicine() {
 
               {/* Category */}
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 }} className="space-y-2">
-                <label htmlFor="category" className="flex items-center gap-2 text-md font-semibold text-gray-700">
-                  <Tag size={16} className="text-primary" /> Category
-                </label>
-                <select
+                <CustomDropdown
                   id="category"
                   value={formValues.category}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white cursor-pointer ${
-                    errors.category ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
-                  }`}
-                >
-                  <option value="pain-fever">Pain & Fever</option>
-                  <option value="infections">Infections</option>
-                  <option value="heart-bp">Heart & BP</option>
-                  <option value="lungs-allergy">Lungs & Allergy</option>
-                  <option value="stomach-digestion">Stomach & Digestion</option>
-                  <option value="hormones-diabetes">Hormones & Diabetes</option>
-                  <option value="brain-mental">Brain and Mental Health</option>
-                  <option value="vitamins-others">Vitamins & Others</option>
-                </select>
+                  label="Category"
+                  icon={Tag}
+                  error={!!errors.category}
+                  options={[
+                    { value: "pain-fever", label: "Pain & Fever" },
+                    { value: "infections", label: "Infections" },
+                    { value: "heart-bp", label: "Heart & BP" },
+                    { value: "lungs-allergy", label: "Lungs & Allergy" },
+                    { value: "stomach-digestion", label: "Stomach & Digestion" },
+                    { value: "hormones-diabetes", label: "Hormones & Diabetes" },
+                    { value: "brain-mental", label: "Brain and Mental Health" },
+                    { value: "vitamins-others", label: "Vitamins & Others" }
+                  ]}
+                />
                 {errors.category && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.category}</p>}
+              </motion.div>
+            </div>
+
+            {/* Batch Information Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-100">
+              {/* Batch ID */}
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} className="space-y-2">
+                <label htmlFor="batchId" className="flex items-center gap-2 text-md font-semibold text-gray-700">
+                  <Hash size={16} className="text-primary" /> Batch ID
+                </label>
+                <input
+                  type="text"
+                  id="batchId"
+                  value={formValues.batchId}
+                  onChange={handleChange}
+                  placeholder="e.g. PM-12345"
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition-all duration-200 bg-white ${
+                    errors.batchId ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-200 focus:border-primary focus:ring-primary/20"
+                  }`}
+                />
+                {errors.batchId && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.batchId}</p>}
+                <p className="text-xs text-gray-500 mt-1">Format: PM-{"{number}"} (e.g., PM-12345)</p>
+              </motion.div>
+
+              {/* Expiry Date */}
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45 }} className="space-y-2">
+                <DatePicker
+                  value={formValues.expiryDate}
+                  onChange={(date) => {
+                    setFormValues((prev) => ({ ...prev, expiryDate: date }));
+                    if (errors.expiryDate) {
+                      setErrors((prev) => ({ ...prev, expiryDate: undefined }));
+                    }
+                  }}
+                  label="Expiry Date"
+                  icon={Calendar}
+                  placeholder="Select expiry date"
+                  error={!!errors.expiryDate}
+                  minDate={new Date()}
+                />
+                {errors.expiryDate && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle size={14} />{errors.expiryDate}</p>}
               </motion.div>
             </div>
           </div>
