@@ -1,42 +1,136 @@
 import React, { useState, useEffect } from "react";
-import { AlertModal } from "./ui/AlertModal";
+import { useAuth } from "@clerk/clerk-react";
 import {
-  Search,
-  Filter,
-  ExternalLink,
-  ChevronDown,
-  AlertTriangle,
-} from "lucide-react";
-import { mockAlerts } from "../../utils/mockData";
+  fetchAllComplaints,
+  updateComplaintStatus,
+} from "../../apis/Alerts/alerts";
+import FilterPanelHorizontal from "./components/FilterPanelHorizontal";
+import ComplaintTable from "./components/ComplaintTable";
+import ComplaintModal from "./components/ComplaintModal";
+import ToastNotification from "../../components/ui/Alerts/ToastNotification";
 
 export function AlertList() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedAlert, setSelectedAlert] = useState(null);
+  const { getToken } = useAuth();
+  const [complaints, setComplaints] = useState([]);
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filteredAlerts, setFilteredAlerts] = useState(mockAlerts);
-  const [isSearching, setIsSearching] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({
+    status: "",
+    city: "",
+    store: "",
+    batchId: "",
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [toast, setToast] = useState({
+    isVisible: false,
+    type: "success",
+    message: "",
+  });
 
-  // Debounced search with animation
+  // Fetch complaints
+  const fetchComplaints = async () => {
+    try {
+      setLoading(true);
+      const token = await getToken();
+      const response = await fetchAllComplaints(token, {
+        ...filters,
+        page: currentPage,
+        limit: 15,
+      });
+
+      if (response?.data) {
+        setComplaints(response.data.complaints || []);
+        setTotalPages(response.data.totalPages || 1);
+      }
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to fetch complaints";
+      showToast("error", errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch complaints when filters or page changes
   useEffect(() => {
-    setIsSearching(true);
+    fetchComplaints();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
+
+  // Debounce filter changes
+  useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const filtered = mockAlerts.filter(
-        (alert) =>
-          alert.medicineName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          alert.manufacturer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          alert.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          alert.alertID.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredAlerts(filtered);
-      setIsSearching(false);
-    }, 300);
+      setCurrentPage(1); // Reset to first page when filters change
+      fetchComplaints();
+    }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.status, filters.city, filters.store, filters.batchId]);
 
-  const handleViewAlert = (alert) => {
-    setSelectedAlert(alert);
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      status: "",
+      city: "",
+      store: "",
+      batchId: "",
+    });
+  };
+
+  const handleRowClick = (complaint) => {
+    setSelectedComplaint(complaint);
     setIsModalOpen(true);
+  };
+
+  const handleUpdateComplaint = async (id, data) => {
+    try {
+      const token = await getToken();
+      await updateComplaintStatus(id, data, token);
+      
+      // Update local state
+      setComplaints((prev) =>
+        prev.map((complaint) =>
+          complaint._id === id
+            ? { ...complaint, status: data.status, adminRemarks: data.adminRemarks }
+            : complaint
+        )
+      );
+
+      showToast("success", "Complaint updated successfully!");
+      fetchComplaints(); // Refresh the list
+    } catch (error) {
+      console.error("Error updating complaint:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to update complaint";
+      showToast("error", errorMessage);
+      throw error; // Re-throw to let modal handle it
+    }
+  };
+
+  const showToast = (type, message) => {
+    setToast({
+      isVisible: true,
+      type,
+      message,
+    });
+  };
+
+  const hideToast = () => {
+    setToast((prev) => ({ ...prev, isVisible: false }));
   };
 
   return (
@@ -49,149 +143,70 @@ export function AlertList() {
               Alert Dashboard
             </h1>
             <p className="text-gray-600 mt-2">
-              Monitor and manage medication alerts
+              Monitor and manage medication complaints
             </p>
           </div>
         </div>
 
-        {/* Search Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden transform transition-all duration-300 hover:shadow-md">
-          <div className="p-6">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-              <div className="relative flex-grow">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Search size={20} className="text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search by medicine, manufacturer, city, or alert ID"
-                  className="pl-12 w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all duration-200 bg-gray-50/50"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
+        {/* Filters - Above Table */}
+        <FilterPanelHorizontal
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={handleClearFilters}
+        />
+
+        {/* Complaint Table */}
+        <ComplaintTable
+          complaints={complaints}
+          loading={loading}
+          onRowClick={handleRowClick}
+        />
+
+        {/* Pagination */}
+        {!loading && complaints.length > 0 && totalPages > 1 && (
+          <div className="mt-6 flex justify-center items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <span className="px-4 py-2 text-gray-700">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+              }
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
           </div>
+        )}
 
-          {/* Table Section */}
-          <div className="relative overflow-hidden">
-            {/* Loading Animation */}
-            {isSearching && (
-              <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
-                <div className="flex items-center gap-3 text-gray-600">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                  Searching...
-                </div>
-              </div>
-            )}
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-gray-50 to-blue-50/50 border-y border-gray-200">
-                  <tr>
-                    <th className="py-5 px-7 font-semibold text-gray-700 text-md uppercase tracking-wider">
-                      Alert ID
-                    </th>
-                    <th className="py-5 px-7 font-semibold text-gray-700 text-md uppercase tracking-wider">
-                      Medicine
-                    </th>
-                    <th className="py-5 px-7 font-semibold text-gray-700 text-md uppercase tracking-wider">
-                      Manufacturer
-                    </th>
-                    <th className="py-5 px-7 font-semibold text-gray-700 text-md uppercase tracking-wider">
-                      City 
-                    </th>
-                    <th className="py-5 px-7 font-semibold text-gray-700 text-md uppercase tracking-wider">
-                      QR Code
-                    </th>
-                    <th className="py-5 px-7 font-semibold text-gray-700 text-md uppercase tracking-wider">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {filteredAlerts.map((alert, index) => (
-                    <tr
-                      key={alert.alertID}
-                      className="hover:bg-blue-50/30 transition-all duration-200 group cursor-pointer"
-                      style={{
-                        animationDelay: `${index * 0.05}s`,
-                        animation: "slideInUp 0.3s ease-out forwards",
-                      }}
-                    >
-                      <td className="py-5 px-6">
-                        <div className="flex items-center gap-2">
-                          <span className="text-md font-medium text-gray-900">
-                            {alert.alertID}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-5 px-6">
-                        <div className="font-medium text-gray-900">
-                          {alert.medicineName}
-                        </div>
-                        <div className="text-md text-gray-500 mt-1">
-                          {alert.medicineDose}
-                        </div>
-                      </td>
-                      <td className="py-5 px-6">
-                        <span className="text-gray-700">
-                          {alert.manufacturer}
-                        </span>
-                      </td>
-                      <td className="py-5 px-6">
-                        <span className="text-md text-gray-600  rounded-lg">
-                          {alert.city}
-                        </span>
-                      </td>
-                      <td className="py-5 px-6">
-                        <div className="transform transition-transform duration-200 group-hover:scale-110">
-                          <img
-                            src={alert.qrCode}
-                            alt="QR Code"
-                            className="w-12 h-12 object-contain rounded-lg shadow-md border border-gray-200"
-                          />
-                        </div>
-                      </td>
-                      <td className="py-5 px-6">
-                        <button
-                          onClick={() => handleViewAlert(alert)}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover transform transition-all duration-200 hover:scale-105 hover:shadow-md group/btn"
-                        >
-                          Details
-                          <ExternalLink
-                            size={14}
-                            className="group-hover/btn:translate-x-0.5 transition-transform"
-                          />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Empty State */}
-            {filteredAlerts.length === 0 && !isSearching && (
-              <div className="text-center py-16">
-                <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Search size={32} className="text-gray-400" />
-                </div>
-                <p className="text-gray-500 text-lg mb-2">No alerts found</p>
-                <p className="text-gray-400">Try adjusting your search terms</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Modal */}
-        {isModalOpen && selectedAlert && (
-          <AlertModal
-            alert={selectedAlert}
+        {/* Complaint Modal */}
+        {isModalOpen && selectedComplaint && (
+          <ComplaintModal
+            complaint={selectedComplaint}
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedComplaint(null);
+            }}
+            onUpdate={handleUpdateComplaint}
           />
         )}
+
+        {/* Toast Notification */}
+        <ToastNotification
+          isVisible={toast.isVisible}
+          type={toast.type}
+          message={toast.message}
+          onClose={hideToast}
+        />
       </div>
 
       {/* Add CSS animations */}
