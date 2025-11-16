@@ -2,22 +2,24 @@ import { useState, useRef, useEffect } from "react";
 import { Calendar, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const DatePicker = ({ 
-  value, 
-  onChange, 
-  placeholder = "Select date", 
+const DatePicker = ({
+  value,
+  onChange,
+  placeholder = "Select date",
   error = false,
   minDate = null,
   label = "",
-  icon: Icon = Calendar
+  icon: Icon = Calendar,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(value ? new Date(value) : new Date());
+  const [currentMonth, setCurrentMonth] = useState(
+    value ? new Date(value) : new Date()
+  );
   const datePickerRef = useRef(null);
 
   const months = [
     "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "July", "August", "September", "October", "November", "December",
   ];
 
   useEffect(() => {
@@ -26,7 +28,6 @@ const DatePicker = ({
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -38,11 +39,11 @@ const DatePicker = ({
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-
     return { daysInMonth, startingDayOfWeek, year, month };
   };
 
-  const { daysInMonth, startingDayOfWeek, year, month } = getDaysInMonth(currentMonth);
+  const { daysInMonth, startingDayOfWeek, year, month } =
+    getDaysInMonth(currentMonth);
 
   const handlePrevMonth = () => {
     setCurrentMonth(new Date(year, month - 1, 1));
@@ -54,12 +55,7 @@ const DatePicker = ({
 
   const handleDateSelect = (day) => {
     const selectedDate = new Date(year, month, day);
-    
-    // Check if date is before minDate
-    if (minDate && selectedDate < new Date(minDate)) {
-      return; // Don't select dates before minDate
-    }
-
+    if (minDate && selectedDate < new Date(minDate)) return;
     onChange(selectedDate);
     setIsOpen(false);
   };
@@ -72,10 +68,10 @@ const DatePicker = ({
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
-    return d.toLocaleDateString("en-GB", { 
-      day: "2-digit", 
-      month: "short", 
-      year: "numeric" 
+    return d.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
@@ -112,7 +108,7 @@ const DatePicker = ({
           {label}
         </label>
       )}
-      
+
       <div className="relative">
         <div
           onClick={() => setIsOpen(!isOpen)}
@@ -130,12 +126,13 @@ const DatePicker = ({
               {value ? formatDate(value) : placeholder}
             </span>
           </div>
+
           {value && (
             <button
               onClick={handleClear}
-              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-1 hover:bg-gray-100 rounded"
             >
-              <X size={16} className="text-gray-500" />
+              <X size={12} className="text-gray-500" />
             </button>
           )}
         </div>
@@ -143,41 +140,41 @@ const DatePicker = ({
         <AnimatePresence>
           {isOpen && (
             <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              initial={{ opacity: 0, y: -6, scale: 0.94 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="absolute z-50 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 p-4 w-full min-w-[320px]"
+              exit={{ opacity: 0, y: -6, scale: 0.94 }}
+              transition={{ duration: 0.16 }}
+              className="absolute z-50 mt-1 bg-white rounded-md shadow-lg border border-gray-200 p-2 min-w-[180px] w-[250px]"
             >
-              {/* Month/Year Navigation */}
-              <div className="flex items-center justify-between mb-4">
+              {/* Month Navigation */}
+              <div className="flex items-center justify-between mb-1.5">
                 <button
                   onClick={handlePrevMonth}
-                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                  className="p-1 hover:bg-primary/10 rounded"
                 >
-                  <ChevronLeft size={20} className="text-primary" />
+                  <ChevronLeft size={16} className="text-primary" />
                 </button>
-                <div className="text-center">
-                  <h3 className="font-semibold text-gray-900">
-                    {months[month]} {year}
-                  </h3>
-                </div>
+
+                <h3 className="font-semibold text-gray-800 text-md">
+                  {months[month].slice(0, 3)} {year}
+                </h3>
+
                 <button
                   onClick={handleNextMonth}
-                  className="p-2 hover:bg-primary/10 rounded-lg transition-colors"
+                  className="p-1 hover:bg-primary/10 rounded"
                 >
-                  <ChevronRight size={20} className="text-primary" />
+                  <ChevronRight size={16} className="text-primary" />
                 </button>
               </div>
 
-              {/* Days of Week */}
-              <div className="grid grid-cols-7 gap-1 mb-2">
-                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
+              {/* Weekday Headers */}
+              <div className="grid grid-cols-7 gap-0.5 mb-1">
+                {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
                   <div
-                    key={day}
-                    className="text-center text-xs font-semibold text-gray-500 py-2"
+                    key={d}
+                    className="text-center text-xs font-semibold text-gray-500"
                   >
-                    {day}
+                    {d}
                   </div>
                 ))}
               </div>
@@ -189,7 +186,6 @@ const DatePicker = ({
                   <div key={`empty-${index}`} className="aspect-square" />
                 ))}
 
-                {/* Days of the month */}
                 {Array.from({ length: daysInMonth }).map((_, index) => {
                   const day = index + 1;
                   const disabled = isDateDisabled(day);
@@ -202,17 +198,17 @@ const DatePicker = ({
                       type="button"
                       onClick={() => !disabled && handleDateSelect(day)}
                       disabled={disabled}
-                      whileHover={!disabled ? { scale: 1.1 } : {}}
-                      whileTap={!disabled ? { scale: 0.95 } : {}}
+                      whileHover={!disabled ? { scale: 1.05 } : {}}
+                      whileTap={!disabled ? { scale: 0.9 } : {}}
                       className={`
-                        aspect-square rounded-lg text-sm font-medium transition-all duration-200
+                        h-6 w-6 flex items-center justify-center rounded text-xs
                         ${selected
-                          ? "bg-primary text-white shadow-md"
+                          ? "bg-primary text-white"
                           : today
-                          ? "bg-primary/10 text-primary border-2 border-primary"
+                          ? "bg-primary/10 text-primary border border-primary"
                           : disabled
                           ? "text-gray-300 cursor-not-allowed"
-                          : "hover:bg-primary/10 text-gray-700"
+                          : "text-gray-700 hover:bg-primary/10"
                         }
                       `}
                     >
@@ -223,21 +219,19 @@ const DatePicker = ({
               </div>
 
               {/* Today Button */}
-              <div className="mt-4 pt-3 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const today = new Date();
-                    if (!minDate || today >= new Date(minDate)) {
-                      onChange(today);
-                      setIsOpen(false);
-                    }
-                  }}
-                  className="w-full py-2 px-4 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg font-medium transition-colors"
-                >
-                  Today
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const today = new Date();
+                  if (!minDate || today >= new Date(minDate)) {
+                    onChange(today);
+                    setIsOpen(false);
+                  }
+                }}
+                className="w-full mt-2 py-1 text-sm bg-primary/10 hover:bg-primary/20 text-primary rounded"
+              >
+                Today
+              </button>
             </motion.div>
           )}
         </AnimatePresence>

@@ -221,7 +221,7 @@ function AddMedicine() {
     >
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-gray-900 to-primary bg-clip-text text-transparent inline-block ">
+        <h1 className="text-4xl font-bold mb-2 bg-linear-to-r from-gray-900 to-primary bg-clip-text text-transparent inline-block ">
           Add New Medicine
         </h1>
         <p className="text-gray-600 text-lg">Fill in the details to add a new medicine to the inventory</p>
