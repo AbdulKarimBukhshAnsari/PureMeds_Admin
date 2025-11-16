@@ -40,6 +40,11 @@ const MedicineList = () => {
   const ITEMS_PER_PAGE = 10;
   const [totalPages, setTotalPages] = useState(1);
 
+  // Reset page to 1 when search or category changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedCategory]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -58,7 +63,7 @@ const MedicineList = () => {
       }
     };
     fetchData();
-  }, [searchQuery, selectedCategory, currentPage, getToken]);
+  }, [currentPage, searchQuery, selectedCategory, getToken]);
 
   const HandleDelete = async (id) => {
     try {

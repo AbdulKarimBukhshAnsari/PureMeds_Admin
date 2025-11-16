@@ -78,3 +78,40 @@ export const fetchBatchComplaintCount = async (batchId, token) => {
   }
 };
 
+// Export complaints to CSV
+export const exportComplaintsCSV = async (filters, token) => {
+  try {
+    const { status, city, store, batchId } = filters;
+    
+    const queryParams = new URLSearchParams();
+    if (status) queryParams.append("status", status);
+    if (city) queryParams.append("city", city);
+    if (store) queryParams.append("store", store);
+    if (batchId) queryParams.append("batchId", batchId);
+
+    const URL = `${API_URL}/complaints/export/csv?${queryParams.toString()}`;
+    const response = await axios.get(URL, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    });
+    
+    // Create download link
+    const blob = new Blob([response.data], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `complaints_${Date.now()}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    return true;
+  } catch (error) {
+    console.error("Error exporting complaints:", error);
+    throw error;
+  }
+};
+

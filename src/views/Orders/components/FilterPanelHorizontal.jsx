@@ -2,9 +2,9 @@ import React from "react";
 import { Filter, X } from "lucide-react";
 
 const FilterPanelHorizontal = ({ filters, onFilterChange, onClearFilters }) => {
-  const statusOptions = ["Pending", "Reviewed", "Resolved", "Invalid"];
+  const statusOptions = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "returned"];
 
-  const hasActiveFilters = filters.status || filters.city || filters.store || filters.batchId;
+  const hasActiveFilters = filters.status || filters.batchId;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
@@ -24,7 +24,7 @@ const FilterPanelHorizontal = ({ filters, onFilterChange, onClearFilters }) => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Status Filter */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -38,38 +38,10 @@ const FilterPanelHorizontal = ({ filters, onFilterChange, onClearFilters }) => {
             <option value="">All Status</option>
             {statusOptions.map((status) => (
               <option key={status} value={status}>
-                {status}
+                {status.charAt(0).toUpperCase() + status.slice(1)}
               </option>
             ))}
           </select>
-        </div>
-
-        {/* City Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            City
-          </label>
-          <input
-            type="text"
-            placeholder="Filter by city"
-            value={filters.city || ""}
-            onChange={(e) => onFilterChange("city", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all duration-200 bg-gray-50/50 text-gray-900 text-sm"
-          />
-        </div>
-
-        {/* Store Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Store
-          </label>
-          <input
-            type="text"
-            placeholder="Filter by store"
-            value={filters.store || ""}
-            onChange={(e) => onFilterChange("store", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all duration-200 bg-gray-50/50 text-gray-900 text-sm"
-          />
         </div>
 
         {/* Batch ID Filter */}
