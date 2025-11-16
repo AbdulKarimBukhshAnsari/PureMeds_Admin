@@ -48,6 +48,12 @@ function AdminLayout() {
               <span>Alert List</span>
             </div>
             </Link>
+            <Link to={'/dashboard/order-list'}>
+            <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
+              <TriangleAlert size={20} />
+              <span>Order List</span>
+            </div>
+            </Link>
             <a 
               href="http://localhost:5174/" 
               target="_blank" 

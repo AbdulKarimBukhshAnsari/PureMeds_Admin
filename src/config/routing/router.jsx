@@ -9,6 +9,7 @@ import AddMedicine from "../../views/AddMedicine/AddMedicine";
 import MedicineList from "../../views/MedicineList/MedicineList";
 import Loader from "../../components/ui/LoadingAnimation/Loader";
 import { AlertList } from "../../views/Alerts/AlertList";
+import { OrderList } from "../../views/Orders/OrderList";
 
 function AppRouter() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -39,6 +40,7 @@ function AppRouter() {
         <Route path="add-medicine" element={<AddMedicine />} />
         <Route path="medicine-list" element={<MedicineList />} />
         <Route path="alert-list" element={<AlertList />} />
+        <Route path="order-list" element={<OrderList />} />
 
       </Route>
     </Routes>
