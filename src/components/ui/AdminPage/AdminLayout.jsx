@@ -6,6 +6,7 @@ import {
   PlusCircle,
   TriangleAlert,
   ExternalLink,
+  ShoppingCart
 } from "lucide-react";
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
@@ -50,7 +51,7 @@ function AdminLayout() {
             </Link>
             <Link to={'/dashboard/order-list'}>
             <div className="flex flex-row items-center gap-3 p-3 rounded hover:bg-primary-hover transition">
-              <TriangleAlert size={20} />
+              <ShoppingCart size={20} />
               <span>Order List</span>
             </div>
             </Link>
