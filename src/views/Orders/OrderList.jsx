@@ -1,33 +1,31 @@
 import React, { useState, useEffect , useRef } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import {
-  fetchAllComplaints,
-  updateComplaintStatus,
-  exportComplaintsCSV,
-} from "../../apis/Alerts/alerts";
+  fetchAllOrders,
+  updateOrderStatus,
+  exportOrdersCSV,
+} from "../../apis/Orders/orders";
 import FilterPanelHorizontal from "./components/FilterPanelHorizontal";
-import ComplaintTable from "./components/ComplaintTable";
-import ComplaintModal from "./components/ComplaintModal";
+import OrderTable from "./components/OrderTable";
+import OrderModal from "./components/OrderModal";
 import Pagination from "./components/Pagination";
 import ToastNotification from "../../components/ui/Alerts/ToastNotification";
 import { Download } from "lucide-react";
 
-export function AlertList() {
+export function OrderList() {
   const { getToken } = useAuth();
+  const [orders, setOrders] = useState([]);
   const isFirstRun = useRef(true);
-  const [complaints, setComplaints] = useState([]);
-  const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     status: "",
-    city: "",
-    store: "",
     batchId: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalComplaints, setTotalComplaints] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
   const ITEMS_PER_PAGE = 10;
   const [toast, setToast] = useState({
     isVisible: false,
@@ -36,50 +34,48 @@ export function AlertList() {
   });
   const [exportingCSV, setExportingCSV] = useState(false);
 
-  // Fetch complaints
-  const fetchComplaints = async () => {
+  // Fetch orders
+  const fetchOrders = async () => {
     try {
       setLoading(true);
       const token = await getToken();
-      const response = await fetchAllComplaints(token, {
+      const response = await fetchAllOrders(token, {
         ...filters,
         page: currentPage,
         limit: ITEMS_PER_PAGE,
       });
 
       if (response?.data) {
-        setComplaints(response.data.complaints || []);
+        setOrders(response.data.orders || []);
         setTotalPages(response.data.totalPages || 1);
-        setTotalComplaints(response.data.totalComplaints || 0);
+        setTotalOrders(response.data.totalOrders || 0);
       }
     } catch (error) {
-      console.error("Error fetching complaints:", error);
+      console.error("Error fetching orders:", error);
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to fetch complaints";
+        "Failed to fetch orders";
       showToast("error", errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-
-
   // Debounce filter changes
   useEffect(() => {
-    if (isFirstRun.current) return ; 
+    if(isFirstRun.current) return ; 
     const timeoutId = setTimeout(() => {
-      setCurrentPage(1);
-      fetchComplaints();
+      setCurrentPage(1); // Reset to first page when filters change
+      fetchOrders();
     }, 500);
 
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.status, filters.city, filters.store, filters.batchId]);
+  }, [filters.status, filters.batchId]);
 
   useEffect(() => {
-    fetchComplaints() ;
+    fetchOrders();
     isFirstRun.current = false ; 
   }, [currentPage])
   
@@ -94,41 +90,57 @@ export function AlertList() {
   const handleClearFilters = () => {
     setFilters({
       status: "",
-      city: "",
-      store: "",
       batchId: "",
     });
   };
 
-  const handleRowClick = (complaint) => {
-    setSelectedComplaint(complaint);
+  const handleRowClick = (order) => {
+    setSelectedOrder(order);
     setIsModalOpen(true);
   };
 
-  const handleUpdateComplaint = async (id, data) => {
+  const handleUpdateOrder = async (id, data) => {
     try {
       const token = await getToken();
-      await updateComplaintStatus(id, data, token);
-      
+      await updateOrderStatus(id, data, token);
+
       // Update local state
-      setComplaints((prev) =>
-        prev.map((complaint) =>
-          complaint._id === id
-            ? { ...complaint, status: data.status, adminRemarks: data.adminRemarks }
-            : complaint
+      setOrders((prev) =>
+        prev.map((order) =>
+          order._id === id
+            ? { ...order, status: data.status, adminRemarks: data.adminRemarks }
+            : order
         )
       );
 
-      showToast("success", "Complaint updated successfully!");
-      fetchComplaints(); // Refresh the list
+      showToast("success", "Order updated successfully!");
+      fetchOrders(); // Refresh the list
     } catch (error) {
-      console.error("Error updating complaint:", error);
+      console.error("Error updating order:", error);
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to update complaint";
+        "Failed to update order";
       showToast("error", errorMessage);
       throw error; // Re-throw to let modal handle it
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      setExportingCSV(true);
+      const token = await getToken();
+      await exportOrdersCSV(filters, token);
+      showToast("success", "Orders exported successfully!");
+    } catch (error) {
+      console.error("Error exporting orders:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to export orders";
+      showToast("error", errorMessage);
+    } finally {
+      setExportingCSV(false);
     }
   };
 
@@ -144,24 +156,6 @@ export function AlertList() {
     setToast((prev) => ({ ...prev, isVisible: false }));
   };
 
-  const handleExportCSV = async () => {
-    try {
-      setExportingCSV(true);
-      const token = await getToken();
-      await exportComplaintsCSV(filters, token);
-      showToast("success", "Complaints exported successfully!");
-    } catch (error) {
-      console.error("Error exporting complaints:", error);
-      const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to export complaints";
-      showToast("error", errorMessage);
-    } finally {
-      setExportingCSV(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-background p-5">
       <div className="max-w-7xl mx-auto">
@@ -169,10 +163,10 @@ export function AlertList() {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
           <div className="mb-4 lg:mb-0">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-primary bg-clip-text text-transparent">
-              Alert Dashboard
+              Order Dashboard
             </h1>
             <p className="text-gray-600 mt-2">
-              Monitor and manage medication complaints
+              Monitor and manage customer orders
             </p>
           </div>
           <button
@@ -192,34 +186,34 @@ export function AlertList() {
           onClearFilters={handleClearFilters}
         />
 
-        {/* Complaint Table */}
-        <ComplaintTable
-          complaints={complaints}
+        {/* Order Table */}
+        <OrderTable
+          orders={orders}
           loading={loading}
           onRowClick={handleRowClick}
         />
 
         {/* Pagination */}
-        {!loading && complaints.length > 0 && (
+        {!loading && orders.length > 0 && (
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            totalComplaints={totalComplaints}
-            complaintListLength={complaints.length}
+            totalOrders={totalOrders}
+            orderListLength={orders.length}
             onPageChange={setCurrentPage}
           />
         )}
 
-        {/* Complaint Modal */}
-        {isModalOpen && selectedComplaint && (
-          <ComplaintModal
-            complaint={selectedComplaint}
+        {/* Order Modal */}
+        {isModalOpen && selectedOrder && (
+          <OrderModal
+            order={selectedOrder}
             isOpen={isModalOpen}
             onClose={() => {
               setIsModalOpen(false);
-              setSelectedComplaint(null);
+              setSelectedOrder(null);
             }}
-            onUpdate={handleUpdateComplaint}
+            onUpdate={handleUpdateOrder}
           />
         )}
 
@@ -248,3 +242,4 @@ export function AlertList() {
     </div>
   );
 }
+
