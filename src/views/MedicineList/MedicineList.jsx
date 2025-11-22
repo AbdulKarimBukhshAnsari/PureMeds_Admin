@@ -56,7 +56,9 @@ const MedicineList = () => {
           selectedCategory
         );
         setProductList(data?.data?.products || []);
-        setTotalPages(Math.ceil((data?.data?.totalProducts || 0) / ITEMS_PER_PAGE));
+        setTotalPages(
+          Math.ceil((data?.data?.totalProducts || 0) / ITEMS_PER_PAGE)
+        );
         setTotalProducts(data?.data?.totalProducts || 0);
       } catch (error) {
         console.error("Error fetching medicine list:", error);
@@ -113,10 +115,11 @@ const MedicineList = () => {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
           <div className="mb-4 lg:mb-0">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-primary bg-clip-text text-transparent inline-block">
+            <h1 className="text-4xl font-bold bg-gradient-to-r to-gray-900 from-primary bg-clip-text text-transparent inline-block">
+              {/* <h1 className="text-4xl font-bold text-orange-400"> */}
               Medicine List
             </h1>
-            <p className="text-gray-600 mt-2">
+            <p className="text-md text-gray-600 mt-2">
               Manage and monitor your medicine inventory
             </p>
           </div>

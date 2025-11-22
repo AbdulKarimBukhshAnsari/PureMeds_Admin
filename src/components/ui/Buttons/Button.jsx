@@ -15,7 +15,8 @@ const Button = ({
     primary: "bg-primary text-white hover:bg-primary focus:ring-primary",
     secondary: "bg-background text-text hover:bg-gray-200 focus:ring-gray-300",
     accent: "bg-accent text-white hover:bg-accent-hover focus:ring-accent",
-    outline:"bg-transparent border border-primary text-primary hover:bg-primary/10 focus:ring-primary",
+    outline:
+      "bg-transparent border border-primary text-primary hover:bg-primary/10 focus:ring-primary",
   };
 
   const sizeClasses = {
