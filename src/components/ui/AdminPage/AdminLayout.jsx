@@ -28,9 +28,9 @@ export default function AdminLayout() {
     <div className="flex min-h-screen bg-background relative">
       {/* Sidebar */}
       <aside
-        className={`flex flex-col justify-between bg-gradient-to-b from-primary-hover via-primary to-orange-400
-    text-white transition-all duration-300 overflow-hidden`}
-        style={{ width: open ? "20rem" : "5rem", padding: "1.5rem" }}
+        className={`flex flex-col justify-between bg-[#deefec]
+    text-orange-400 transition-all duration-300 overflow-hidden border-r border-gray-200`}
+        style={{ width: open ? "15rem" : "5rem", padding: "1.5rem" }}
       >
         {/* Top Section */}
         <div className="flex flex-col">
@@ -47,19 +47,19 @@ export default function AdminLayout() {
               >
                 <path
                   d="M12 2L12 12M12 12L2 7L12 2L22 7L12 12Z"
-                  stroke="white"
+                  stroke="orange"
                   strokeWidth="2"
                 />
                 <path
                   d="M2 17L12 22L22 17M12 12V22"
-                  stroke="white"
+                  stroke="orange"
                   strokeWidth="2"
                 />
               </svg>
             </button>
 
             <span
-              className="text-2xl font-bold text-white overflow-hidden transition-all duration-300 whitespace-nowrap"
+              className="text-2xl font-semibold text-primary overflow-hidden transition-all duration-300 whitespace-nowrap"
               style={{ maxWidth: open ? "calc(100% - 3rem)" : "0px" }}
             >
               PureMeds
@@ -68,7 +68,6 @@ export default function AdminLayout() {
           <div className="h-px bg-white/20" />
         </div>
 
-        {/* Middle Menu (centered) */}
         {/* Middle Menu (centered) */}
         <div
           className="flex flex-col justify-center gap-1"
@@ -85,10 +84,10 @@ export default function AdminLayout() {
               <Link key={item.to} to={item.to}>
                 <div
                   className={`flex items-center h-12 p-1 rounded-lg transition-all duration-300
-            ${active ? "bg-white/30" : "hover:bg-white/10"}`}
+            ${active ? "text-primary" : "hover:text-primary"}`}
                 >
                   <div className="flex-shrink-0 w-6 h-6 flex justify-center items-center">
-                    <item.icon size={20} className="text-primary"/>
+                    <item.icon size={20} />
                   </div>
                   <div
                     className="flex-grow ml-3 overflow-hidden transition-all duration-300 whitespace-nowrap"
@@ -155,7 +154,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow p-6 overflow-auto max-h-screen admin-scroll overflow-x-hidden min-w-0">
+      <main className="flex-grow p-2 overflow-auto max-h-screen admin-scroll overflow-x-hidden min-w-0">
         <Outlet />
       </main>
     </div>

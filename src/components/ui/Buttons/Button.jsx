@@ -16,7 +16,8 @@ const Button = ({
     // primary:"bg-gradient-to-r to-primary from-orange-400 text-white font-bold px-6 py-3 rounded-xl shadow-md",
     secondary: "bg-background text-text hover:bg-gray-200 focus:ring-gray-300",
     accent: "bg-accent text-white hover:bg-accent-hover focus:ring-accent",
-    outline:"bg-transparent border border-primary text-primary hover:bg-primary/10 focus:ring-primary",
+    outline:
+      "bg-transparent border border-primary text-primary hover:bg-primary/10 focus:ring-primary",
   };
 
   const sizeClasses = {
