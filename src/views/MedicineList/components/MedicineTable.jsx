@@ -5,7 +5,7 @@ import MedicineTableRow from "./MedicineTableRow";
 const MedicineTable = ({ productList, onView, onDelete }) => {
   return (
     <div className="relative overflow-hidden">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto hide-scrollbar ">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-gray-50 to-blue-50/50 border-y border-gray-200">
             <tr>

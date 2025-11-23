@@ -5,7 +5,7 @@ const Pagination = ({ currentPage, totalPages, totalComplaints, complaintListLen
   if (complaintListLength === 0) return null;
 
   return (
-    <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t border-gray-200 bg-white">
+    <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t shadow-sm rounded-b-2xl border-gray-200 bg-white">
       <div className="text-gray-600 text-sm mb-4 sm:mb-0">
         Showing {complaintListLength} of {totalComplaints} complaints
       </div>

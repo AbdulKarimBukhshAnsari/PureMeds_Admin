@@ -149,6 +149,7 @@ const DatePicker = ({
               {/* Month Navigation */}
               <div className="flex items-center justify-between mb-1.5">
                 <button
+                type="button"
                   onClick={handlePrevMonth}
                   className="p-1 hover:bg-primary/10 rounded"
                 >
@@ -160,6 +161,7 @@ const DatePicker = ({
                 </h3>
 
                 <button
+                type="button"
                   onClick={handleNextMonth}
                   className="p-1 hover:bg-primary/10 rounded"
                 >

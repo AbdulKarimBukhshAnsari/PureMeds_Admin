@@ -49,7 +49,7 @@ const ComplaintTable = ({ complaints, loading, onRowClick }) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12">
+      <div className="bg-white rounded-2xl shadow-sm border-y border-gray-100 p-12">
         <div className="flex flex-col items-center justify-center">
           <Loader2 size={32} className="animate-spin text-primary mb-4" />
           <p className="text-gray-600">Loading complaints...</p>
@@ -73,7 +73,7 @@ const ComplaintTable = ({ complaints, loading, onRowClick }) => {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-t-2xl shadow-sm border-y border-gray-100 overflow-hidden">
       <div className="relative overflow-hidden">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-gray-50 to-blue-50/50 border-y border-gray-200">
