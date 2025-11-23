@@ -53,10 +53,9 @@ const OrderTable = ({ orders, loading, onRowClick }) => {
   };
 
   const truncateName = (name, maxLength = 15) => {
-  if (!name) return "";
-  return name.length > maxLength ? name.slice(0, maxLength) + "..." : name;
-};
-
+    if (!name) return "";
+    return name.length > maxLength ? name.slice(0, maxLength) + "..." : name;
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -147,8 +146,12 @@ const OrderTable = ({ orders, loading, onRowClick }) => {
                   {order.products && order.products.length > 0 ? (
                     <div className="space-y-1">
                       {order.products.slice(0, 2).map((product, idx) => (
-                        <div key={idx} className="text-sm text-gray-700 truncate">
-                           {truncateName(product.productName)} (Qty: {product.quantity})
+                        <div
+                          key={idx}
+                          className="text-sm text-gray-700 truncate"
+                        >
+                          {truncateName(product.productName)} (Qty:{" "}
+                          {product.quantity})
                         </div>
                       ))}
                       {order.products.length > 2 && (
@@ -178,7 +181,7 @@ const OrderTable = ({ orders, loading, onRowClick }) => {
                       e.stopPropagation();
                       onRowClick(order);
                     }}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover transform transition-all duration-200 hover:scale-105 hover:shadow-md group/btn"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover transform transition-all duration-200 hover:scale-105 hover:shadow-md group/btn cursor-pointer"
                   >
                     View
                     <ExternalLink
@@ -197,4 +200,3 @@ const OrderTable = ({ orders, loading, onRowClick }) => {
 };
 
 export default OrderTable;
-

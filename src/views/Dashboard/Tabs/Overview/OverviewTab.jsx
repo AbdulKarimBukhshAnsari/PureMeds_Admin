@@ -38,7 +38,7 @@ const OverviewTab = () => {
 
   const categoryNames = {
     "pain-fever": "Pain & Fever",
-    "infections": "Infections",
+    infections: "Infections",
     "heart-bp": "Heart & BP",
     "lungs-allergy": "Lungs & Allergy",
     "stomach-digestion": "Stomach & Digestion",
@@ -108,61 +108,93 @@ const OverviewTab = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4, duration: 0.3 }}
-          className="lg:col-span-1 bg-white rounded-2xl shadow-lg border border-gray-100 p-6"
+          className="lg:col-span-1 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 flex flex-col"
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 bg-primary/10 rounded-lg">
               <Activity className="text-primary" size={20} />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Quick Actions
+            </h2>
           </div>
-          <div className="space-y-4">
-            <Link to="/dashboard/add-medicine">
-              <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl hover:from-primary/10 hover:to-primary/15 transition-all cursor-pointer group">
+
+          <div className="flex flex-col flex-1 gap-4">
+            <Link to="/dashboard/add-medicine" className="flex-1">
+              <div className="flex items-center gap-4 p-4 h-full bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl hover:from-primary/10 hover:to-primary/15 transition-all cursor-pointer group">
                 <div className="p-2 bg-primary rounded-lg group-hover:scale-110 transition-transform">
                   <PlusCircle size={20} className="text-white" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">Add New Medicine</p>
-                  <p className="text-sm text-gray-500">Add a new product to inventory</p>
+                  <p className="font-semibold text-gray-900">
+                    Add New Medicine
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Add a new product to inventory
+                  </p>
                 </div>
-                <ArrowUpRight size={18} className="text-gray-400 group-hover:text-primary transition-colors" />
+                <ArrowUpRight
+                  size={18}
+                  className="text-gray-400 group-hover:text-primary transition-colors"
+                />
               </div>
             </Link>
-            <Link to="/dashboard/medicine-list">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all cursor-pointer group">
+
+            <Link to="/dashboard/medicine-list" className="flex-1">
+              <div className="flex items-center gap-4 p-4 h-full bg-gray-50 rounded-xl hover:bg-gray-100 transition-all cursor-pointer group">
                 <div className="p-2 bg-gray-200 rounded-lg group-hover:scale-110 transition-transform">
                   <List size={20} className="text-gray-700" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">View All Medicines</p>
-                  <p className="text-sm text-gray-500">Browse complete inventory</p>
+                  <p className="font-semibold text-gray-900">
+                    View All Medicines
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Browse complete inventory
+                  </p>
                 </div>
-                <ArrowUpRight size={18} className="text-gray-400 group-hover:text-gray-700 transition-colors" />
+                <ArrowUpRight
+                  size={18}
+                  className="text-gray-400 group-hover:text-gray-700 transition-colors"
+                />
               </div>
             </Link>
-            <Link to="/dashboard/order-list">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all cursor-pointer group">
+
+            <Link to="/dashboard/order-list" className="flex-1">
+              <div className="flex items-center gap-4 p-4 h-full bg-gray-50 rounded-xl hover:bg-gray-100 transition-all cursor-pointer group">
                 <div className="p-2 bg-blue-100 rounded-lg group-hover:scale-110 transition-transform">
                   <ShoppingCart size={20} className="text-blue-600" />
                 </div>
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900">Go to Orders</p>
-                  <p className="text-sm text-gray-500">Manage customer orders</p>
+                  <p className="text-sm text-gray-500">
+                    Manage customer orders
+                  </p>
                 </div>
-                <ArrowUpRight size={18} className="text-gray-400 group-hover:text-blue-600 transition-colors" />
+                <ArrowUpRight
+                  size={18}
+                  className="text-gray-400 group-hover:text-blue-600 transition-colors"
+                />
               </div>
             </Link>
-            <Link to="/dashboard/alert-list">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-all cursor-pointer group">
+
+            <Link to="/dashboard/alert-list" className="flex-1">
+              <div className="flex items-center gap-4 p-4 h-full bg-gray-50 rounded-xl hover:bg-gray-100 transition-all cursor-pointer group">
                 <div className="p-2 bg-orange-100 rounded-lg group-hover:scale-110 transition-transform">
                   <AlertTriangle size={20} className="text-orange-600" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">Go to Complaints</p>
-                  <p className="text-sm text-gray-500">Check medication complaints</p>
+                  <p className="font-semibold text-gray-900">
+                    Go to Complaints
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Check medication complaints
+                  </p>
                 </div>
-                <ArrowUpRight size={18} className="text-gray-400 group-hover:text-orange-600 transition-colors" />
+                <ArrowUpRight
+                  size={18}
+                  className="text-gray-400 group-hover:text-orange-600 transition-colors"
+                />
               </div>
             </Link>
           </div>
@@ -179,7 +211,9 @@ const OverviewTab = () => {
             <div className="p-2 bg-primary/10 rounded-lg">
               <BarChart3 className="text-primary" size={20} />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Category Distribution</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Category Distribution
+            </h2>
           </div>
           <CategoryChart
             categoryDistribution={data.categoryDistribution || {}}
@@ -202,7 +236,9 @@ const OverviewTab = () => {
               <div className="p-2 bg-primary/10 rounded-lg">
                 <Clock className="text-primary" size={20} />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900">Recent Medicines</h2>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Recent Medicines
+              </h2>
             </div>
             <Link to="/dashboard/medicine-list">
               <button className="px-4 py-2 text-sm text-primary hover:bg-primary/10 rounded-lg transition">
@@ -233,11 +269,16 @@ const OverviewTab = () => {
                       Rs. {medicine.price} • Stock: {medicine.availableStock}
                     </p>
                   </div>
-                  <ArrowUpRight size={18} className="text-gray-400 group-hover:text-primary transition-colors" />
+                  <ArrowUpRight
+                    size={18}
+                    className="text-gray-400 group-hover:text-primary transition-colors"
+                  />
                 </motion.div>
               ))
             ) : (
-              <p className="text-gray-500 text-center py-8">No recent medicines</p>
+              <p className="text-gray-500 text-center py-8">
+                No recent medicines
+              </p>
             )}
           </div>
         </motion.div>
@@ -253,7 +294,9 @@ const OverviewTab = () => {
             <div className="p-2 bg-orange-100 rounded-lg">
               <AlertCircle className="text-orange-600" size={20} />
             </div>
-            <h2 className="text-xl font-semibold text-gray-900">Low Stock Alerts</h2>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Low Stock Alerts
+            </h2>
           </div>
           <div className="space-y-4">
             {data.lowStockMedicines && data.lowStockMedicines.length > 0 ? (
@@ -286,8 +329,12 @@ const OverviewTab = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Package size={32} className="text-green-600" />
                 </div>
-                <p className="text-gray-700 font-semibold mb-1">All Stock Levels Good!</p>
-                <p className="text-sm text-gray-500">No low stock items to report</p>
+                <p className="text-gray-700 font-semibold mb-1">
+                  All Stock Levels Good!
+                </p>
+                <p className="text-sm text-gray-500">
+                  No low stock items to report
+                </p>
               </div>
             )}
           </div>
@@ -298,4 +345,3 @@ const OverviewTab = () => {
 };
 
 export default OverviewTab;
-

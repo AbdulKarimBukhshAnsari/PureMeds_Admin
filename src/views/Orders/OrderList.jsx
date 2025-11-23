@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import {
   fetchAllOrders,
@@ -26,7 +26,7 @@ export function OrderList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalOrders, setTotalOrders] = useState(0);
-  const ITEMS_PER_PAGE = 10;
+  const ITEMS_PER_PAGE = 5;
   const [toast, setToast] = useState({
     isVisible: false,
     type: "success",
@@ -64,7 +64,7 @@ export function OrderList() {
 
   // Debounce filter changes
   useEffect(() => {
-    if(isFirstRun.current) return ; 
+    if (isFirstRun.current) return;
     const timeoutId = setTimeout(() => {
       setCurrentPage(1); // Reset to first page when filters change
       fetchOrders();
@@ -76,9 +76,8 @@ export function OrderList() {
 
   useEffect(() => {
     fetchOrders();
-    isFirstRun.current = false ; 
-  }, [currentPage])
-  
+    isFirstRun.current = false;
+  }, [currentPage]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
@@ -242,4 +241,3 @@ export function OrderList() {
     </div>
   );
 }
-

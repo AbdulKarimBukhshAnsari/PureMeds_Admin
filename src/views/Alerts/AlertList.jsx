@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import {
   fetchAllComplaints,
@@ -64,11 +64,9 @@ export function AlertList() {
     }
   };
 
-
-
   // Debounce filter changes
   useEffect(() => {
-    if (isFirstRun.current) return ; 
+    if (isFirstRun.current) return;
     const timeoutId = setTimeout(() => {
       setCurrentPage(1);
       fetchComplaints();
@@ -79,10 +77,9 @@ export function AlertList() {
   }, [filters.status, filters.city, filters.store, filters.batchId]);
 
   useEffect(() => {
-    fetchComplaints() ;
-    isFirstRun.current = false ; 
-  }, [currentPage])
-  
+    fetchComplaints();
+    isFirstRun.current = false;
+  }, [currentPage]);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({
@@ -109,12 +106,16 @@ export function AlertList() {
     try {
       const token = await getToken();
       await updateComplaintStatus(id, data, token);
-      
+
       // Update local state
       setComplaints((prev) =>
         prev.map((complaint) =>
           complaint._id === id
-            ? { ...complaint, status: data.status, adminRemarks: data.adminRemarks }
+            ? {
+                ...complaint,
+                status: data.status,
+                adminRemarks: data.adminRemarks,
+              }
             : complaint
         )
       );
@@ -178,7 +179,7 @@ export function AlertList() {
           <button
             onClick={handleExportCSV}
             disabled={exportingCSV}
-            className="px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transform transition-all duration-200 hover:scale-105 hover:shadow-md flex items-center gap-2 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transform transition-all duration-200 hover:scale-105 hover:shadow-md flex items-center gap-2 font-medium text-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download size={18} />
             {exportingCSV ? "Exporting..." : "Export CSV"}
