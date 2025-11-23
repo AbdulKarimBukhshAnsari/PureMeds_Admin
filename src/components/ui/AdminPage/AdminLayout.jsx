@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 export default function AdminLayout() {
-  const [manualOpen, setManualOpen] = useState(true);
+  const [manualOpen, setManualOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const location = useLocation();
   const open = manualOpen || hovered;
@@ -102,12 +102,12 @@ export default function AdminLayout() {
 
           {/* External Link */}
           <a
-            href="http://localhost:5174/"
+            href="http://localhost:5173/"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <div className="flex items-center h-12 p-1 rounded-lg hover:bg-white/10 transition-all duration-300">
-              <div className="flex-shrink-0 w-6 h-6 flex justify-center items-center">
+            <div className="flex items-center h-12 p-1 rounded-lg hover:bg-white/10 transition-all duration-300 hover:text-primary">
+              <div className="flex-shrink-0 w-6 h-6 flex justify-center items-center ">
                 <ExternalLink size={20} />
               </div>
               <div

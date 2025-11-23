@@ -52,6 +52,12 @@ const OrderTable = ({ orders, loading, onRowClick }) => {
     );
   };
 
+  const truncateName = (name, maxLength = 15) => {
+  if (!name) return "";
+  return name.length > maxLength ? name.slice(0, maxLength) + "..." : name;
+};
+
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -88,7 +94,7 @@ const OrderTable = ({ orders, loading, onRowClick }) => {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-t-2xl shadow-sm border border-gray-100 overflow-hidden">
       <div className="relative overflow-hidden">
         <table className="w-full">
           <thead className="bg-gradient-to-r from-gray-50 to-blue-50/50 border-y border-gray-200">
@@ -128,7 +134,7 @@ const OrderTable = ({ orders, loading, onRowClick }) => {
                 }}
               >
                 <td className="py-5 px-6">
-                  <span className="text-md font-medium text-gray-900">
+                  <span className="text-md font-medium text-gray-900 whitespace-nowrap ">
                     {order.orderId || "N/A"}
                   </span>
                 </td>
@@ -142,7 +148,7 @@ const OrderTable = ({ orders, loading, onRowClick }) => {
                     <div className="space-y-1">
                       {order.products.slice(0, 2).map((product, idx) => (
                         <div key={idx} className="text-sm text-gray-700 truncate">
-                          {product.productName} (Qty: {product.quantity})
+                           {truncateName(product.productName)} (Qty: {product.quantity})
                         </div>
                       ))}
                       {order.products.length > 2 && (
