@@ -49,14 +49,14 @@ const MedicineTableRow = ({ product, index, onView, onDelete }) => {
       <td className="py-5 px-6 text-left">
         <div className="flex items-center gap-3">
           <button
-            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-110"
+            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all duration-200 hover:scale-110 cursor-pointer"
             title="View Details"
             onClick={() => onView(product)}
           >
             <Eye size={18} />
           </button>
           <button
-            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110"
+            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200 hover:scale-110 cursor-pointer"
             onClick={() => onDelete(product._id)}
             title="Delete"
           >
@@ -69,4 +69,3 @@ const MedicineTableRow = ({ product, index, onView, onDelete }) => {
 };
 
 export default MedicineTableRow;
-

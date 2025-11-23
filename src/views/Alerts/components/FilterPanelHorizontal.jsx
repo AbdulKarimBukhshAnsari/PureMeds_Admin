@@ -1,10 +1,18 @@
 import React from "react";
 import { Filter, X } from "lucide-react";
+import CustomDropdown from "../../../components/ui/Dropdown/CustomDropdown";
+
+const statusOptions = [
+  { value: "", label: "All Status" },
+  { value: "Pending", label: "Pending" },
+  { value: "Reviewed", label: "Reviewed" },
+  { value: "Resolved", label: "Resolved" },
+  { value: "Invalid", label: "Invalid" },
+];
 
 const FilterPanelHorizontal = ({ filters, onFilterChange, onClearFilters }) => {
-  const statusOptions = ["Pending", "Reviewed", "Resolved", "Invalid"];
-
-  const hasActiveFilters = filters.status || filters.city || filters.store || filters.batchId;
+  const hasActiveFilters =
+    filters.status || filters.city || filters.store || filters.batchId;
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
@@ -30,18 +38,13 @@ const FilterPanelHorizontal = ({ filters, onFilterChange, onClearFilters }) => {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Status
           </label>
-          <select
+          <CustomDropdown
             value={filters.status || ""}
             onChange={(e) => onFilterChange("status", e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all duration-200 bg-gray-50/50 text-gray-900 text-sm cursor-pointer"
-          >
-            <option value="">All Status</option>
-            {statusOptions.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
+            options={statusOptions}
+            placeholder="All Status"
+            id="status-filter"
+          />
         </div>
 
         {/* City Filter */}
@@ -91,4 +94,3 @@ const FilterPanelHorizontal = ({ filters, onFilterChange, onClearFilters }) => {
 };
 
 export default FilterPanelHorizontal;
-

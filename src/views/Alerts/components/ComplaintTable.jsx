@@ -130,7 +130,9 @@ const ComplaintTable = ({ complaints, loading, onRowClick }) => {
                 <td className="py-5 px-6">
                   <span className="text-gray-700">{complaint.store}</span>
                 </td>
-                <td className="py-5 px-6">{getStatusBadge(complaint.status)}</td>
+                <td className="py-5 px-6">
+                  {getStatusBadge(complaint.status)}
+                </td>
                 <td className="py-5 px-6">
                   <span className="text-gray-600 text-sm">
                     {formatDate(complaint.createdAt)}
@@ -142,7 +144,7 @@ const ComplaintTable = ({ complaints, loading, onRowClick }) => {
                       e.stopPropagation();
                       onRowClick(complaint);
                     }}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover transform transition-all duration-200 hover:scale-105 hover:shadow-md group/btn"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover transform transition-all duration-200 hover:scale-105 hover:shadow-md group/btn cursor-pointer"
                   >
                     View
                     <ExternalLink
@@ -161,4 +163,3 @@ const ComplaintTable = ({ complaints, loading, onRowClick }) => {
 };
 
 export default ComplaintTable;
-

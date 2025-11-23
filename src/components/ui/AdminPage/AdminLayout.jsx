@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 export default function AdminLayout() {
-  const [manualOpen, setManualOpen] = useState(false);
+  const [manualOpen, setManualOpen] = useState(true);
   const [hovered, setHovered] = useState(false);
   const location = useLocation();
   const open = manualOpen || hovered;
@@ -102,12 +102,12 @@ export default function AdminLayout() {
 
           {/* External Link */}
           <a
-            href="http://localhost:5173/"
+            href="http://localhost:5174/"
             target="_blank"
             rel="noopener noreferrer"
           >
             <div className="flex items-center h-12 p-1 rounded-lg hover:bg-white/10 transition-all duration-300 hover:text-primary">
-              <div className="flex-shrink-0 w-6 h-6 flex justify-center items-center ">
+              <div className="flex-shrink-0 w-6 h-6 flex justify-center items-center">
                 <ExternalLink size={20} />
               </div>
               <div
@@ -132,22 +132,24 @@ export default function AdminLayout() {
               if (!manualOpen) setHovered(false);
             }}
           >
-            <div className="flex-shrink-0 w-6 h-6 flex justify-center items-center">
-              <UserButton
-                appearance={{
-                  theme: "simple",
-                  variables: {
-                    colorPrimary: "#156874",
-                    colorBackground: "#f5f3f0",
-                  },
-                }}
-              />
-            </div>
-            <div
-              className="ml-3 overflow-hidden transition-all duration-300 whitespace-nowrap"
-              style={{ maxWidth: open ? "100%" : "0px" }}
-            >
-              <span>Profile</span>
+            <div className="hover:text-primary flex flex-row items-center gap-1">
+              <div className="flex-shrink-0 w-6 h-6 flex justify-center items-center">
+                <UserButton
+                  appearance={{
+                    theme: "simple",
+                    variables: {
+                      colorPrimary: "#156874",
+                      colorBackground: "#f5f3f0",
+                    },
+                  }}
+                />
+              </div>
+              <div
+                className="ml-3 overflow-hidden transition-all duration-300 whitespace-nowrap"
+                style={{ maxWidth: open ? "100%" : "0px" }}
+              >
+                <span>Profile</span>
+              </div>
             </div>
           </div>
         </div>
