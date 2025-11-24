@@ -1,5 +1,17 @@
 import React, { useState } from "react";
-import { X, PillBottle, Building2, DollarSign, Package, Calendar, Hash, AlertCircle, QrCode, Shield, CheckCircle } from "lucide-react";
+import {
+  X,
+  PillBottle,
+  Building2,
+  DollarSign,
+  Package,
+  Calendar,
+  Hash,
+  AlertCircle,
+  QrCode,
+  Shield,
+  CheckCircle,
+} from "lucide-react";
 import { verifyMedicineByHash } from "../../../apis/Verification/verification";
 import { useAuth } from "@clerk/clerk-react";
 import { useToast } from "../../../hooks/useToast/useToast";
@@ -11,7 +23,7 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
   const [verificationResult, setVerificationResult] = useState(null);
   const { getToken } = useAuth();
   const [toast, showSuccess, showError, hideToast] = useToast();
-  
+
   if (!isOpen || !medicine) return null;
 
   const handleVerifyMedicine = async () => {
@@ -24,16 +36,18 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
     try {
       const token = await getToken();
       const response = await verifyMedicineByHash(medicine.hash, token);
-      
+
       setVerificationResult(response.data);
       setShowVerificationModal(true);
-      
+
       // Show appropriate toast based on result
       if (response.data.isValid && response.data.isDistributedByPureMeds) {
         if (response.data.isExpired) {
           showError("Medicine verified but has EXPIRED!");
         } else if (response.data.daysUntilExpiry <= 30) {
-          showError(`Warning: Medicine expires in ${response.data.daysUntilExpiry} days`);
+          showError(
+            `Warning: Medicine expires in ${response.data.daysUntilExpiry} days`
+          );
         } else {
           showSuccess("Medicine verified successfully on blockchain!");
         }
@@ -92,7 +106,9 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
                 <div className="lg:col-span-1 space-y-4">
                   {/* Product Image */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                    <h4 className="text-base font-semibold text-gray-900 mb-3">Product Image</h4>
+                    <h4 className="text-base font-semibold text-gray-900 mb-3">
+                      Product Image
+                    </h4>
                     <div className="flex justify-center">
                       <img
                         src={medicine.productImage}
@@ -104,30 +120,48 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
 
                   {/* Basic Info */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                    <h4 className="text-base font-semibold text-gray-900 mb-3">Basic Information</h4>
+                    <h4 className="text-base font-semibold text-gray-900 mb-3">
+                      Basic Information
+                    </h4>
                     <div className="space-y-3 text-sm">
                       <div>
-                        <p className="text-gray-500 text-xs mb-1">Product Name</p>
-                        <p className="font-medium text-gray-900">{medicine.productName}</p>
+                        <p className="text-gray-500 text-xs mb-1">
+                          Product Name
+                        </p>
+                        <p className="font-medium text-gray-900">
+                          {medicine.productName}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-gray-500 text-xs mb-1">Chemical Name</p>
-                        <p className="font-medium text-gray-900">{medicine.chemicalName}</p>
+                        <p className="text-gray-500 text-xs mb-1">
+                          Chemical Name
+                        </p>
+                        <p className="font-medium text-gray-900">
+                          {medicine.chemicalName}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-gray-500 text-xs mb-1">Manufacturer</p>
-                        <p className="font-medium text-gray-900">{medicine.manufacturer}</p>
+                        <p className="text-gray-500 text-xs mb-1">
+                          Manufacturer
+                        </p>
+                        <p className="font-medium text-gray-900">
+                          {medicine.manufacturer}
+                        </p>
                       </div>
                       <div>
                         <p className="text-gray-500 text-xs mb-1">Category</p>
-                        <p className="font-medium text-gray-900">{formatCategory(medicine.category)}</p>
+                        <p className="font-medium text-gray-900">
+                          {formatCategory(medicine.category)}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* QR Code Section */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                    <h4 className="text-base font-semibold text-gray-900 mb-3">QR Code & Verification</h4>
+                    <h4 className="text-base font-semibold text-gray-900 mb-3">
+                      QR Code & Verification
+                    </h4>
                     <div className="space-y-3">
                       {medicine.qrCode ? (
                         <>
@@ -144,13 +178,19 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
                             className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex items-center justify-center space-x-2 disabled:opacity-50"
                           >
                             <Shield className="h-4 w-4" />
-                            <span>{isVerifying ? "Verifying..." : "Verify on Blockchain"}</span>
+                            <span>
+                              {isVerifying
+                                ? "Verifying..."
+                                : "Verify on Blockchain"}
+                            </span>
                           </button>
                         </>
                       ) : (
                         <div className="text-center py-8">
                           <QrCode className="h-12 w-12 text-gray-300 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500">QR Code not available</p>
+                          <p className="text-sm text-gray-500">
+                            QR Code not available
+                          </p>
                         </div>
                       )}
                     </div>
@@ -161,30 +201,46 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
                 <div className="lg:col-span-2 space-y-4">
                   {/* Pricing & Stock */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                    <h4 className="text-base font-semibold text-gray-900 mb-3">Pricing & Stock</h4>
+                    <h4 className="text-base font-semibold text-gray-900 mb-3">
+                      Pricing & Stock
+                    </h4>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <p className="text-gray-500 text-xs mb-1">Price</p>
-                        <p className="font-medium text-gray-900">Rs. {medicine.price}</p>
+                        <p className="font-medium text-gray-900">
+                          Rs. {medicine.price}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-gray-500 text-xs mb-1">Available Stock</p>
-                        <p className="font-medium text-gray-900">{medicine.availableStock} units</p>
+                        <p className="text-gray-500 text-xs mb-1">
+                          Available Stock
+                        </p>
+                        <p className="font-medium text-gray-900">
+                          {medicine.availableStock} units
+                        </p>
                       </div>
                       <div>
                         <p className="text-gray-500 text-xs mb-1">Batch ID</p>
-                        <p className="font-medium text-gray-900 font-mono text-xs">{medicine.batchId}</p>
+                        <p className="font-medium text-gray-900 font-mono text-xs">
+                          {medicine.batchId}
+                        </p>
                       </div>
                       <div>
-                        <p className="text-gray-500 text-xs mb-1">Expiry Date</p>
-                        <p className="font-medium text-gray-900">{formatDate(medicine.expiryDate)}</p>
+                        <p className="text-gray-500 text-xs mb-1">
+                          Expiry Date
+                        </p>
+                        <p className="font-medium text-gray-900">
+                          {formatDate(medicine.expiryDate)}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Purpose */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                    <h4 className="text-base font-semibold text-gray-900 mb-3">Purpose</h4>
+                    <h4 className="text-base font-semibold text-gray-900 mb-3">
+                      Purpose
+                    </h4>
                     <div className="bg-white border border-gray-200 rounded-lg p-3">
                       <p className="text-gray-700 text-sm leading-relaxed">
                         {medicine.purpose}
@@ -194,29 +250,32 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
 
                   {/* Side Effects */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                    <h4 className="text-base font-semibold text-gray-900 mb-3">Side Effects</h4>
+                    <h4 className="text-base font-semibold text-gray-900 mb-3">
+                      Side Effects
+                    </h4>
                     <div className="bg-white border border-gray-200 rounded-lg p-3">
-                      {medicine.sideEffects && medicine.sideEffects.length > 0 ? (
+                      {medicine.sideEffects &&
+                      medicine.sideEffects.length > 0 ? (
                         <ul className="list-disc list-inside space-y-1">
-                          {Array.isArray(medicine.sideEffects) ? (
-                            medicine.sideEffects.map((effect, index) => (
-                              <li key={index} className="text-gray-700 text-sm">
-                                {effect}
-                              </li>
-                            ))
-                          ) : (
-                            <li className="text-gray-700 text-sm">{medicine.sideEffects}</li>
-                          )}
+                          {JSON.parse(medicine.sideEffects).map((effect, index) => (
+                            <li key={index} className="text-gray-700 text-sm">
+                              {effect}
+                            </li>
+                          ))}
                         </ul>
                       ) : (
-                        <p className="text-gray-500 text-sm">No side effects listed</p>
+                        <p className="text-gray-500 text-sm">
+                          No side effects listed
+                        </p>
                       )}
                     </div>
                   </div>
 
                   {/* Timestamps */}
                   <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                    <h4 className="text-base font-semibold text-gray-900 mb-3">Timestamps</h4>
+                    <h4 className="text-base font-semibold text-gray-900 mb-3">
+                      Timestamps
+                    </h4>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <p className="text-gray-500 text-xs mb-1">Created At</p>
@@ -262,12 +321,14 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
                 <X size={20} />
               </button>
             </div>
-            
-            <div className={`p-4 rounded-lg mb-4 ${
-              verificationResult.isValid 
-                ? "bg-green-50 border border-green-200" 
-                : "bg-red-50 border border-red-200"
-            }`}>
+
+            <div
+              className={`p-4 rounded-lg mb-4 ${
+                verificationResult.isValid
+                  ? "bg-green-50 border border-green-200"
+                  : "bg-red-50 border border-red-200"
+              }`}
+            >
               <div className="flex items-center space-x-3">
                 {verificationResult.isValid ? (
                   <CheckCircle className="h-8 w-8 text-green-600" />
@@ -286,22 +347,26 @@ const ViewMedicineModal = ({ medicine, isOpen, onClose }) => {
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500">Batch ID:</span>
-                <span className="font-medium">{verificationResult.batchId || medicine.batchId}</span>
+                <span className="font-medium">
+                  {verificationResult.batchId || medicine.batchId}
+                </span>
               </div>
               {verificationResult.registeredAt && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Registered:</span>
                   <span className="font-medium">
-                    {new Date(verificationResult.registeredAt * 1000).toLocaleDateString()}
+                    {new Date(
+                      verificationResult.registeredAt * 1000
+                    ).toLocaleDateString()}
                   </span>
                 </div>
               )}
             </div>
-            
+
             <button
               onClick={() => setShowVerificationModal(false)}
               className="w-full mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-hover transition"
