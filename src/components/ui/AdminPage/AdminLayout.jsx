@@ -102,7 +102,7 @@ export default function AdminLayout() {
 
           {/* External Link */}
           <a
-            href="http://localhost:5174/"
+            href="http://localhost:5173/"
             target="_blank"
             rel="noopener noreferrer"
           >
