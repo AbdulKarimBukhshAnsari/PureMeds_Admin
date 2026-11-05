@@ -1,0 +1,81 @@
+name: Admin CI/CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: puremeds-admin
+  ECS_CLUSTER: puremeds-cluster
+  ECS_SERVICE: admin-svc
+  TASK_FAMILY: puremeds-admin
+  CONTAINER_NAME: admin
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Production build must succeed
+        run: npm run build
+        env:
+          VITE_API_URL: /api/v1/admin
+          VITE_CLERK_PUBLISHABLE_KEY: ${{ vars.VITE_CLERK_PUBLISHABLE_KEY }}
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag and push image
+        id: image
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            --build-arg VITE_API_URL=/api/v1/admin \
+            --build-arg VITE_CLERK_PUBLISHABLE_KEY=${{ vars.VITE_CLERK_PUBLISHABLE_KEY }} \
+            -t $REGISTRY/$ECR_REPOSITORY:$TAG -t $REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $REGISTRY/$ECR_REPOSITORY:$TAG
+          docker push $REGISTRY/$ECR_REPOSITORY:latest
+          echo "uri=$REGISTRY/$ECR_REPOSITORY:$TAG" >> $GITHUB_OUTPUT
+
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition --task-definition $TASK_FAMILY \
+            --query taskDefinition > task-definition.json
+
+      - id: td
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.image.outputs.uri }}
+
+      - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.td.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
