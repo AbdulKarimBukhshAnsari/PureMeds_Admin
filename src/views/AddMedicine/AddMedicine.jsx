@@ -224,7 +224,7 @@ function AddMedicine() {
         <h1 className="text-4xl font-bold mb-2 bg-linear-to-r from-gray-900 to-primary bg-clip-text text-transparent inline-block ">
           Add New Medicine
         </h1>
-        <p className="text-gray-600 text-lg">Fill in the details to add a new medicine to the inventory</p>
+        <p className="text-gray-600 text-lg">Fill in</p>
       </div>
 
       <form onSubmit={handleSubmit}>
